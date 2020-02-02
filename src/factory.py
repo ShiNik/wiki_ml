@@ -10,13 +10,12 @@ class ParserGenerator:
         self.fActive = self.generate_parsers(parser_types_to_generate) # mapping: string --> variable = function name
 
     #types
-    parser_types = {'table': 'table', 'city': 'city', 'museum': 'museum'}
+    parser_types = {'table': 'table', 'infobox':'infobox'}
 
     def generate_parsers(self, parser_types_to_generate):
         switcher = {
             'table':   prs.TableParser(),
-            'city':    prs.CityParser(),
-            'museum':  prs.MuseumParser()
+            'infobox': prs.InfoboxParser()
         }
         parsers_list = {}
         for parser in  parser_types_to_generate:
