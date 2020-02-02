@@ -1,4 +1,4 @@
-from scripts.userscripts import parser as prs
+import parser as prs
 
 class ParserGenerator:
     def __init__(self,parser_types_to_generate):
