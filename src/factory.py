@@ -27,5 +27,5 @@ class ParserGenerator:
             parsers_list[type] =current_parser
         return parsers_list
 
-    def run_function(self, parser_type, text, do_debug=False):
-        return  self.fActive[parser_type].do_parsing(text, do_debug)
+    def run_function(self, parser_type, text, logger):
+        return  self.fActive[parser_type].do_parsing(text, logger)
