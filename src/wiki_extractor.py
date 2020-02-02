@@ -1,7 +1,9 @@
-import requests
+#user define imports
+import src.config as config
+import src.util as util
 
-path_save_data = "D:\\pywikibot\\scripts\\userscripts\\output\\"
-path_save_data ="/home/shima/Documents/src/pywikibot/scripts/userscripts/output/"
+#python imports
+import requests
 
 def USE_REQUEST(page_name, section_id, do_debug=False):
     S = requests.Session()
@@ -21,7 +23,9 @@ def USE_REQUEST(page_name, section_id, do_debug=False):
 
     text = DATA["parse"]["wikitext"]["*"]
     if do_debug:
-        text_file = open(path_save_data+ page_name +".txt", "w", encoding="utf-8")
+        file_name = page_name +".txt"
+        full_path = util.get_full_output_path(file_name)
+        text_file = open(full_path, "w", encoding="utf-8")
         text_file.write(text)
         text_file.close()
     return text
@@ -43,7 +47,9 @@ def USE_REQUEST(page_name, do_debug=False):
 
     text = DATA["parse"]["wikitext"]["*"]
     if do_debug:
-        text_file = open(path_save_data+ page_name +".txt", "w", encoding="utf-8")
+        file_name = page_name +".txt"
+        full_path = util.get_full_output_path(file_name)
+        text_file = open(full_path, "w", encoding="utf-8")
         text_file.write(text)
         text_file.close()
     return text

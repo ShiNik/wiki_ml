@@ -1,6 +1,10 @@
+#user define imports
+import src.config as config
+import src.util as util
+
+#python imports
 from abc import ABC, abstractmethod
-path_save_data = "D:\\pywikibot\\scripts\\userscripts\\output\\"
-path_save_data ="/home/shima/Documents/src/pywikibot/scripts/userscripts/output/"
+import pandas
 
 class Parser():
     def __init__(self):
@@ -19,7 +23,11 @@ class TableParser(Parser):
         import wikitextparser as wtp
         parsed = wtp.parse(text)
         table_info = parsed.tables[0].data()
-        text_file = open(path_save_data+ "List_of_most_visited_museums_table.txt", "w",encoding="utf-8")
+
+        file_name = "List_of_most_visited_museums_table.txt"
+        full_path = util.get_full_output_path(file_name)
+
+        text_file = open(full_path, "w",encoding="utf-8")
         parsed_table = []
         column_type = {"museum":0,"city":1,"visitor":2,"year":3}
         for row_index in range(1, len(table_info), 1):
@@ -121,7 +129,10 @@ class CityParser(Parser):
                    found = ''  # apply your error handling
                if do_debug:
                    print(city_info)
-                   text_file = open(path_save_data+"city_info.txt", "w", encoding="utf-8")
+                   file_name = "city_info.txt"
+                   full_path = util.get_full_output_path(file_name)
+
+                   text_file = open(full_path, "w", encoding="utf-8")
                    text_file.write(city_info)
                    text_file.close()
                return city_info, extracted_data
@@ -196,7 +207,9 @@ class MuseumParser(Parser):
 
                if do_debug:
                    print(museum_info)
-                   text_file = open(path_save_data+"museum_info.txt", "w", encoding="utf-8")
+                   file_name = "museum_info.txt"
+                   full_path = util.get_full_output_path(file_name)
+                   text_file = open(full_path, "w", encoding="utf-8")
                    text_file.write(museum_info)
                    text_file.close()
                return museum_info, extracted_data
