@@ -16,6 +16,9 @@ class Parser():
         raise AssertionError("invalid call!")
 
 class TableParser(Parser):
+    # static data member
+    column_type = {"museum": 0, "city": 1, "visitor": 2, "year": 3}
+
     def __init__(self):
         super().__init__()
 
@@ -25,18 +28,17 @@ class TableParser(Parser):
         parsed = wtp.parse(text)
         table_info = parsed.tables[0].data()
 
-        column_type = {"museum":0,"city":1,"visitor":2,"year":3}
-        df_parsed_table = pd.DataFrame(columns = column_type.keys())
+        df_parsed_table = pd.DataFrame(columns = TableParser.column_type.keys())
         for row_index in range(1, len(table_info), 1):
             cells = table_info[row_index]
             if logger.debug_enabled():
                 logger.log(str(cells), LogManager.Logging_Levels["DEBUG"])
 
             #extract data
-            museum_info = cells[column_type["museum"]]
-            city_info = cells[column_type["city"]]
-            visitor_info = cells[column_type["visitor"]]
-            year_info = cells[column_type["year"]]
+            museum_info = cells[TableParser.column_type["museum"]]
+            city_info = cells[TableParser.column_type["city"]]
+            visitor_info = cells[TableParser.column_type["visitor"]]
+            year_info = cells[TableParser.column_type["year"]]
 
             # perform cleanup only after headers
             museum_info_2 = None
@@ -57,9 +59,9 @@ class TableParser(Parser):
                     museum_info = museum_info.split("|")[1].split('|')[0]
 
             # save data
-            df_parsed_table = df_parsed_table.append(pd.Series([museum_info,city_info,visitor_info,year_info], index = column_type.keys()), ignore_index=True)
+            df_parsed_table = df_parsed_table.append(pd.Series([museum_info,city_info,visitor_info,year_info], index = TableParser.column_type.keys()), ignore_index=True)
             if museum_info_2 is not None:
-                df_parsed_table = df_parsed_table.append(pd.Series([museum_info_2, city_info, visitor_info, year_info], index=column_type.keys()), ignore_index=True)
+                df_parsed_table = df_parsed_table.append(pd.Series([museum_info_2, city_info, visitor_info, year_info], index=TableParser.column_type.keys()), ignore_index=True)
 
         if logger.debug_enabled():
             file_name = "List_of_most_visited_museums_table.csv"
@@ -86,9 +88,12 @@ class InfoboxParser(Parser):
                 for info in city_info_list:
                     if "|" in info and "=" in info:
                         key = info.split("|")[1].split('=')[0]
+                        key = key.strip()
+
                         value = info.split("=")[1]
                         if "]]" in value and "[[" in value:
                             value = value.split("[[")[1].split(']]')[0]
+
                         extracted_data[key] = value
 
                 if logger.debug_enabled():
