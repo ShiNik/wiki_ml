@@ -1,18 +1,17 @@
 #user define imports
-import src.config as config
 import src.util as util
 
 #python imports
 import logging
 
 class LogManager():
-    def __init__(self):
-        self.logger = self.init_logger()
-        self.debug_level = logging.DEBUG
-        self.set_color_enabled = False
-
     #static data member
     Logging_Levels = {"CRITICAL":50,"ERROR":40,"WARNING":30,"INFO":20,"DEBUG":10,"NOTSET":0}
+
+    def __init__(self):
+        self.logger = self.init_logger()
+        self.debug_level = logging.WARNING
+        self.set_color_enabled = False
 
     def init_logger(self):
         # Create a custom logger
@@ -25,15 +24,13 @@ class LogManager():
         full_path = util.get_full_log_path(file_name)
 
         f_handler = logging.FileHandler(full_path)
-        c_handler.setLevel(logging.DEBUG)
+        c_handler.setLevel(logging.WARNING)
         f_handler.setLevel(logging.DEBUG)
 
         # Create formatters and add it to handlers
-        # c_format = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
-        # f_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
         c_format = "[%(filename)s:%(lineno)s - %(funcName)20s() ] - %(levelname)s - %(message)s"
         c_format = logging.Formatter(c_format)
+
         f_format = "[%(filename)s:%(lineno)s - %(funcName)20s() ] - %(asctime)s - %(levelname)s - %(message)s"
         f_format = logging.Formatter(f_format)
 
