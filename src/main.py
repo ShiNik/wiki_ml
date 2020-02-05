@@ -7,6 +7,8 @@ from src.database_manager import DatabaseManager
 import src.config as config
 from  src.parser import TableParser
 
+import src.machine_learning_manager as ml
+
 #step 1: parse the main page : List_of_most_visited_museums
 #step 2: generate the table
 #spet 3: parse the musium page
@@ -17,12 +19,12 @@ from  src.parser import TableParser
 def main():
     logger = LogManager()
     logger.log("Staring the application!", LogManager.Logging_Levels["DEBUG"])
-
     datbase_manager = DatabaseManager(config)
-    loaded_data = datbase_manager.load()
-    # datbase_manager.delete_all()
-    page_name = "List of most visited museums"
-    # page_name = "Louvre"
+    ml.MachineLearningManager.do_analysis(datbase_manager)
+    exit(1)
+    # datbase_manager.delete_all_date()
+
+    page_name = config.main_page_name
     parser_list = [ParserGenerator.parser_types['table'], ParserGenerator.parser_types['infobox']]
     Parser_instance = ParserGenerator(parser_list)
 
@@ -30,15 +32,7 @@ def main():
     text , _= extractor.USE_REQUEST(page_name)
 
     df_parsed_table = Parser_instance.run_function(ParserGenerator.parser_types['table'],text, logger)
-
     parsed_table = df_parsed_table.values.tolist()
-    PRINT_TABLE = False
-    if PRINT_TABLE:
-        for cell in parsed_table[0]:
-            print(cell)
-        for row in parsed_table:
-            print(*row)
-
     #todo: group by city so you retrive city page only once
     #      take advantage of panda
     for i in range(1, len(parsed_table), 1):
@@ -116,6 +110,5 @@ def main():
         extracted_museum_infos["year"] = parsed_table[i][TableParser.column_type["year"]]
         argument_list = {'city': extracted_city_infos, "museum":extracted_museum_infos}  # percent of original size
         datbase_manager.save(**argument_list)
-        datbase_manager.load()
 
 main()

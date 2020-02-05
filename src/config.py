@@ -2,6 +2,9 @@
 log_path_root = 'logs'
 output_path_root = 'output'
 
+#data
+main_page_name = "List of most visited museums"
+
 #Database
 wiki_to_database_city_map = {"name":"name", "population_total":"population",
                              "area_total_km2":"size", "population_as_of":"year_reported"}
@@ -10,6 +13,7 @@ wiki_to_database_museum_map = {"name":"name", "visitor":"visitor", "year":"year_
                                "type":"type", "publictransit":"public_transit",
                                "location":"location", "established":"established",
                                "built":"built"}
+
 database_name = "test"
 # database_type = postgresql+psycopg2
 database_type = "postgres"
@@ -22,3 +26,5 @@ database_password = "pguser"
 # database_host = pywikibot_dbpostgres_1
 database_host ="localhost"
 database_port = "5432"
+
+delete_tables = False

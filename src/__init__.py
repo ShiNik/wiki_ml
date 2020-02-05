@@ -7,4 +7,5 @@ import src.util
 import src.config
 import src.log_manager
 import src.database_manager
+import src.machine_learning_manager
 
