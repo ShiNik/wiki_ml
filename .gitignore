@@ -1,3 +1,7 @@
 .idea/
 src/__pycache__/
+logs/
+logs/*.log
+output/
+output/*.*
 

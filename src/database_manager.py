@@ -150,10 +150,14 @@ class DatabaseManager():
         Session = sessionmaker(bind=self.db_engine)
         self.session = Session()
 
-        Base.metadata.bind = self.db_engine
-        Base.metadata.create_all(self.db_engine)
+        self.metadata = Base.metadata
+        self.metadata.bind = self.db_engine
+        if config.delete_tables:
+            self.drop_table(Museum.__tablename__)
+            self.drop_table(City.__tablename__)
 
 
+        self.metadata.create_all(self.db_engine)
 
     def save(self, **data):
         if not isinstance(data, dict):
@@ -216,7 +220,7 @@ class DatabaseManager():
         keys = data_list[0].keys()
         df_parsed_table = pd.DataFrame(columns=keys)
         for data in data_list:
-            values = list(data_list[0].values())
+            values = list(data.values())
             df_parsed_table=df_parsed_table.append(pd.Series(values, index=keys), ignore_index=True)
         return df_parsed_table
 
@@ -240,7 +244,14 @@ class DatabaseManager():
             print(E.args[0])
             raise E.args[0]
 
-    def delete_all(self):
+    def delete_all_data(self):
         self.session.query(Museum).delete()
         self.session.query(City).delete()
         self.session.commit()
+
+    def drop_table(self,table_name):
+        table = self.metadata.tables.get(table_name)
+        if table is not None:
+            # logging.info(f'Deleting {table_name} table')
+            self.metadata.drop_all(self.db_engine, [table], checkfirst=True)
+
