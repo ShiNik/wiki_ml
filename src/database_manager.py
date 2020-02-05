@@ -1,11 +1,15 @@
 #user define imports
 
-#user define imports
+#python imports
 from sqlalchemy import create_engine, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import StatementError , ProgrammingError
+from sqlalchemy.inspection import inspect
+from collections import defaultdict
+
+import pandas as pd
 #
 #
 # db = create_engine(db_string)
@@ -181,22 +185,57 @@ class DatabaseManager():
             print(E.args[0])
             raise E.args[0]
 
+    # def query_to_list(self, rset):
+    #     """List of result
+    #     Return: columns name, list of result
+    #     """
+    #     result = []
+    #     for obj in rset:
+    #         instance = inspect(obj)
+    #         items = instance.attrs.items()
+    #         result.append([x.value for _, x in items])
+    #     return instance.attrs.keys(), result
+    #
+    # def query_to_dict(self, rset):
+    #     result = defaultdict(list)
+    #     for obj in rset:
+    #         instance = inspect(obj)
+    #         for key, x in instance.attrs.items():
+    #             result[key].append(x.value)
+    #     return result
+
+    def object_as_dict(self, obj):
+        return {c.key: getattr(obj, c.key)
+                for c in inspect(obj).mapper.column_attrs}
+
+    def keys_swap(self,orig_key, new_key, d):
+        d[new_key] = d.pop(orig_key)
+
+    def query_to_df(self,rset):
+        data_list = self.query_to_list(rset)
+        keys = data_list[0].keys()
+        df_parsed_table = pd.DataFrame(columns=keys)
+        for data in data_list:
+            values = list(data_list[0].values())
+            df_parsed_table=df_parsed_table.append(pd.Series(values, index=keys), ignore_index=True)
+        return df_parsed_table
+
+    def query_to_list(self, rset):
+        result = []
+        for row in rset:
+            row_data = {}
+            for object in row:
+                object_in_dict = self.object_as_dict(object)
+                self.keys_swap("name", object.__tablename__, object_in_dict)
+                row_data.update(object_in_dict)
+            result.append(row_data)
+
+        return result
+
     def load(self):
         try:
-            # debug code
-            # rs_city = self.session.query(City).all()
-            # for city in rs_city:
-            #     print(city.id,city.name,city.population)
-            #
-            # rs_museum = self.session.query(Museum).all()
-            # for museum in rs_museum:
-            #     print(museum.id, museum.name, museum.visitor, museum.city_id)
-
-            query = self.session.query(City, Museum).filter( Museum.city_id == City.id).all()
-            for pair in query:
-                for data in pair:
-                    print(data.to_dict())
-
+            query_result = self.session.query(City, Museum).filter( Museum.city_id == City.id).all()
+            return self.query_to_df(query_result)
         except ProgrammingError as E:
             print(E.args[0])
             raise E.args[0]

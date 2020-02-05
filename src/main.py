@@ -19,10 +19,9 @@ def main():
     logger.log("Staring the application!", LogManager.Logging_Levels["DEBUG"])
 
     datbase_manager = DatabaseManager(config)
-    datbase_manager.delete_all()
-
+    loaded_data = datbase_manager.load()
+    # datbase_manager.delete_all()
     page_name = "List of most visited museums"
-    section_id = "2"
     # page_name = "Louvre"
     parser_list = [ParserGenerator.parser_types['table'], ParserGenerator.parser_types['infobox']]
     Parser_instance = ParserGenerator(parser_list)
