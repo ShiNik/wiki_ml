@@ -5,48 +5,9 @@ from sqlalchemy import create_engine, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.exc import StatementError , ProgrammingError
+from sqlalchemy.exc import ProgrammingError
 from sqlalchemy.inspection import inspect
-from collections import defaultdict
-
 import pandas as pd
-#
-#
-# db = create_engine(db_string)
-# base = declarative_base()
-#
-# class Film(base):
-#     __tablename__ = 'films'
-#
-#     title = Column(String, primary_key=True)
-#     director = Column(String)
-#     year = Column(String)
-#
-# Session = sessionmaker(db)
-# session = Session()
-#
-# base.metadata.create_all(db)
-#
-# # Create
-# doctor_strange = Film(title="Doctor Strange", director="Scott Derrickson", year="2016")
-# session.add(doctor_strange)
-# session.commit()
-#
-# # Read
-# films = session.query(Film)
-# for film in films:
-#     print(film.title)
-#
-# # Update
-# doctor_strange.title = "Some2016Film"
-# session.commit()
-#
-# # Delete
-# session.delete(doctor_strange)
-# session.commit()
-# exit(1)
-# # ===================================================================
-#
 
 Base = declarative_base()
 class City(Base):
@@ -131,13 +92,55 @@ class Museum(Base):
     def to_dict(self):
         return self.__dict__
 
+class Singleton:
+    """
+    A non-thread-safe helper class to ease implementing singletons.
+    This should be used as a decorator -- not a metaclass -- to the
+    class that should be a singleton.
+
+    The decorated class can define one `__init__` function that
+    takes only the `self` argument. Also, the decorated class cannot be
+    inherited from. Other than that, there are no restrictions that apply
+    to the decorated class.
+
+    To get the singleton instance, use the `instance` method. Trying
+    to use `__call__` will result in a `TypeError` being raised.
+
+    """
+
+    def __init__(self, decorated):
+        self._decorated = decorated
+
+    def instance(self):
+        """
+        Returns the singleton instance. Upon its first call, it creates a
+        new instance of the decorated class and calls its `__init__` method.
+        On all subsequent calls, the already created instance is returned.
+
+        """
+        try:
+            return self._instance
+        except AttributeError:
+            self._instance = self._decorated()
+            return self._instance
+
+    def __call__(self):
+        raise TypeError('Singletons must be accessed through `instance()`.')
+
+    def __instancecheck__(self, inst):
+        return isinstance(inst, self._decorated)
+
+@Singleton
 class DatabaseManager():
-    # static data member
-    database_type = {"postgres": "postgres"}
+    # # static data member
+    # database_type = {"postgres": "postgres"}
 
-    def __init__(self, config):
+    def __init__(self):
+        self.database_type = {"postgres": "postgres"}
+        return
 
-        if config.database_type not in DatabaseManager.database_type:
+    def init(self, config ):
+        if config.database_type not in self.database_type:
             raise AssertionError("currently " + config.database_type + " database does not supported by the system!")
 
         # build connection string

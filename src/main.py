@@ -16,12 +16,27 @@ import src.machine_learning_manager as ml
 #spet 5: parse the city page
 #step 6: extract city information
 
+def print_main_menu():
+    print('press d for data_mining: ')
+    print('press m for ml: ')
+    print('press e for exit: ')
+
 def main():
     logger = LogManager()
     logger.log("Staring the application!", LogManager.Logging_Levels["DEBUG"])
-    datbase_manager = DatabaseManager(config)
-    ml.MachineLearningManager.do_analysis(datbase_manager)
-    exit(1)
+    datbase_manager = DatabaseManager.instance()
+    datbase_manager.init(config)
+
+    print_main_menu()
+    general_action = input()
+    if general_action == 'e':
+        return
+
+    if general_action == 'm':
+        ml.MachineLearningManager.do_analysis()
+        return
+
+
     # datbase_manager.delete_all_date()
 
     page_name = config.main_page_name
