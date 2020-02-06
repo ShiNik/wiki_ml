@@ -66,13 +66,23 @@ class MachineLearningManager:
         return {"row_size": num_row, "col_size": num_col}
 
     @staticmethod
-    def scatter_plots(plot_size,x_values, y_values, x_titles, y_titels, analysis_types, intercepts, coefs, plot_title):
+    def scatter_plots(analysis_list, plot_title):
+        plot_size = MachineLearningManager.get_plot_size(len(analysis_list))
+
         import matplotlib.pyplot as plt
         fig, axs = plt.subplots(plot_size["row_size"], plot_size["col_size"], figsize=(10, 10),
                                 gridspec_kw={'wspace': 0.2, 'hspace': 0.55})
         fig.suptitle(plot_title, fontsize=15)
         axs = axs.flatten()
-        for x_value, y_value, x_title, y_titel, analysis_type,  intercept, coef, ax in zip(x_values, y_values, x_titles, y_titels, analysis_types,intercepts, coefs, axs):
+        for analysis, ax in zip(analysis_list, axs):
+            x_value = analysis.data_info.x_values
+            y_value = analysis.data_info.y_values
+            x_title = analysis.data_info.x_label
+            y_titel = analysis.data_info.y_label
+            intercept = analysis.results_info.intercept
+            coef = analysis.results_info.coef
+            analysis_type = analysis.type
+
             ax.scatter(x_value, y_value, color='r')
             ax.set_title(analysis_type, size=10, color="g")
             ax.set_xlabel(x_title, size=7, color="y")
@@ -513,8 +523,4 @@ class MachineLearningManager:
             MachineLearningManager.perform_analysis(analysis)
             analysis.print()
 
-
-        # plot_size = MachineLearningManager.get_plot_size(6)
-        # MachineLearningManager.scatter_plots(plot_size, x_values, y_values, x_title, y_title, type_analysis,intercepts, coefs, "Analysis")
-
-        return True
+        MachineLearningManager.scatter_plots(analysis_list, " Linear Regression analysis reesults")
