@@ -15,9 +15,29 @@ class DataFetchManager:
         parser_list = [ParserGenerator.parser_types['table'], ParserGenerator.parser_types['infobox']]
         Parser_instance = ParserGenerator(parser_list)
 
-        # text = USE_WIKI_BOT(page_name)
-        text , _= extractor.USE_REQUEST(page_name)
+        table2 = extractor.USE_REQUEST_csv()
+        tables_txt = table2.splitlines()
+        # head = tables_txt[0].split(",")
+        head = ["city","city_visitor","city_visitor_reported_year"]
+        import pandas as pd
+        df_parsed_table_2 = pd.DataFrame(columns=head)
+        for i in range(1,len(tables_txt),1):
+            city_info = tables_txt[i]
+            delimiter1 = ","
+            delimiter2 = '"'
+            delimiter3 = ",,"
+            test = city_info.split(delimiter3)
+            test2 = test[0].split(delimiter2)
+            city_name = test2[0]
+            city_name = city_name.replace(delimiter1, "")
+            city_visitors = test2[1]
+            values = test[1].split(delimiter1)
+            data = [city_name,city_visitors,values[0]]
+            # for value in values:
+            #     data.append(value)
+            df_parsed_table_2 = df_parsed_table_2.append(pd.Series(data, index = head), ignore_index=True)
 
+        text , _= extractor.USE_REQUEST(page_name)
         df_parsed_table = Parser_instance.run_function(ParserGenerator.parser_types['table'],text, logger)
         parsed_table = df_parsed_table.values.tolist()
         #todo: group by city so you retrive city page only once
@@ -95,6 +115,14 @@ class DataFetchManager:
             extracted_museum_infos["name"] = parsed_table[i][TableParser.column_type["museum"]]
             extracted_museum_infos["visitors"] = parsed_table[i][TableParser.column_type["visitor"]]
             extracted_museum_infos["year"] = parsed_table[i][TableParser.column_type["year"]]
+
+            city_visitor_info = df_parsed_table_2[df_parsed_table_2['city'] == extracted_city_infos["name"]]
+            if extracted_city_infos["name"] == "Paris":
+                print("shima")
+            if(len(city_visitor_info) > 0):
+                extracted_city_infos["city_visitor"] = city_visitor_info["city_visitor"].to_string(index=False)
+                extracted_city_infos["city_visitor_reported_year"] = city_visitor_info["city_visitor_reported_year"].to_string(index=False)
+
             argument_list = {'city': extracted_city_infos, "museum":extracted_museum_infos}  # percent of original size
             datbase_manager = DatabaseManager.instance()
             datbase_manager.save(**argument_list)

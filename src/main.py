@@ -36,8 +36,10 @@ def main():
     if general_action == 'm':
         ml.MachineLearningManager.do_analysis()
         return
+
     if general_action == 'd':
         datbase_manager.delete_all_data()
         data_fetch.DataFetchManager.fetching_data(config,logger)
+        return
 
 main()
