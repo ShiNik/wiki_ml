@@ -1,98 +1,155 @@
 #user define imports
 import src.util as util
 from src.database_manager import DatabaseManager
+import src.statistics as statistics
 
 #python imports
-import pandas as pd
-from sklearn.linear_model import LinearRegression
 import numpy as np
 import re
+
+class DataInfo:
+    def __init__(self, x_data_info, y_data_info):
+        self.x_values = x_data_info["values"]
+        self.x_label = x_data_info["label"]
+        self.y_values = y_data_info["values"]
+        self.y_label = y_data_info["label"]
+
+class ResultsInfo:
+    def __init__(self):
+        self.intercept = None
+        self.coef = None
+        self.covariance_matrix = None
+        self.Pearson_correlation_coefficient = None
+        self.spearman_correlation = None
+
+    def print(self, type):
+        print("intercept: ",self.intercept,", coef: ", self.coef)
+        print(self.covariance_matrix)
+        print("Pearson_correlation_coefficient: ", self.Pearson_correlation_coefficient)
+        print("spearman_correlation: ", self.spearman_correlation)
+
+class AnalysisInfo:
+    def __init__(self, data_info, type):
+        self.data_info =  data_info
+        self.results_info = None
+        self.type = type
+
+    def print(self):
+        if self.results_info is not None :
+            self.results_info.print(self.type)
+
 
 class MachineLearningManager:
     def __init__(self):
         return
 
     @staticmethod
-    def scatter_plot(x,y,test_id):
+    def scatter_plot(x_value, y_value, x_title, y_title, type_analysis):
         import matplotlib.pyplot as plt
         fig=plt.figure()
         ax=fig.add_axes([0,0,1,1])
-        ax.scatter(x, y, color='r')
-        ax.set_xlabel('population ' + test_id)
-        ax.set_ylabel('visitor ' + test_id)
-        ax.set_title('scatter plot')
+        ax.scatter(x_value, y_value, color='r')
+        ax.set_xlabel(x_title)
+        ax.set_ylabel(y_title)
+        ax.set_title('scatter plot ' + type_analysis)
         xx = np.zeros(2)
-        xx[0]= np.min(x)
-        xx[1] = np.max(x)
+        xx[0]= np.min(x_value)
+        xx[1] = np.max(x_value)
         yy = xx+10
         plt.plot(xx,yy, linestyle = "solid")
         plt.show()
 
     @staticmethod
-    def correlation_coef(x,y):
-        np.corrcoef()
+    def get_plot_size(num_items):
+        num_col = 2
+        num_row = int(np.ceil(num_items / num_col))
+        return {"row_size": num_row, "col_size": num_col}
 
     @staticmethod
-    def covariance(x,y):
+    def scatter_plots(plot_size,x_values, y_values, x_titles, y_titels, analysis_types, intercepts, coefs, plot_title):
+        import matplotlib.pyplot as plt
+        fig, axs = plt.subplots(plot_size["row_size"], plot_size["col_size"], figsize=(10, 10),
+                                gridspec_kw={'wspace': 0.2, 'hspace': 0.55})
+        fig.suptitle(plot_title, fontsize=15)
+        axs = axs.flatten()
+        for x_value, y_value, x_title, y_titel, analysis_type,  intercept, coef, ax in zip(x_values, y_values, x_titles, y_titels, analysis_types,intercepts, coefs, axs):
+            ax.scatter(x_value, y_value, color='r')
+            ax.set_title(analysis_type, size=10, color="g")
+            ax.set_xlabel(x_title, size=7, color="y")
+            ax.set_ylabel(y_titel, size=7, color="y")
 
-        # calculate the covariance between two variables
-        from numpy.random import randn
-        from numpy.random import seed
-        from numpy import cov
+            intercept= intercept[0]
+            coef= coef[0][0]
+            # p5 = ax.plot([1, 2, 3], [1, 2, 3], "r--")
+            xx = np.zeros(2)
+            yy  = np.zeros(2)
+            xx[0] = 0
+            yy[0]= intercept
+            xx[1] = np.max(x_value)
+            yy[1] = np.max(x_value) * coef + intercept
 
-        # calculate covariance matrix
-        covariance = cov(x, y)
-        print(covariance)
-
-    @staticmethod
-    def Pearson_correlation_coefficient(x,y):
-        # calculate the Pearson's correlation between two variables
-        from numpy.random import randn
-        from numpy.random import seed
-        from scipy.stats import pearsonr
-        # calculate Pearson's correlation
-        corr, _ = pearsonr(x, y)
-        print('Pearsons correlation: %.3f' % corr)
-
-    @staticmethod
-    def spearman_correlation(x,y):
-        # calculate the spearmans's correlation between two variables
-        from numpy.random import randn
-        from numpy.random import seed
-        from scipy.stats import spearmanr
-        # seed random number generator
-
-        # calculate spearman's correlation
-        corr, _ = spearmanr(x, y)
-        print('Spearmans correlation: %.3f' % corr)
-
+            eq_line = "y = " + "{:10.3f}".format(coef) + "x" + "{:10.3f}".format(intercept)
+            ax.plot(xx, yy, linestyle="solid", label= eq_line)
+        plt.show()
 
     @staticmethod
-    def linearRegression(x,y,test_id):
-        X = np.array(x).reshape(-1, 1)
-        y = np.array(y).reshape(-1, 1)
-        reg = LinearRegression().fit(X, y)
-        print("=================")
-        print(test_id)
-        print("score: ", reg.score(X, y))
-        print("intercept: ", reg.intercept_)
-        print("coef: ", reg.coef_)
+    def group_bar_chart(df):
+
+        labels = ['visitor', 'population', 'city_visitor','established','type']
+        midding_data = []
+        column_name = "visitor"
+        midding_data.append(len(df[df[column_name].eq('')]))
+        column_name = "population"
+        midding_data.append(len(df[df[column_name].eq('')]))
+        column_name = "city_visitor"
+        midding_data.append(len(df[df[column_name].eq('')]))
+        column_name = "established"
+        midding_data.append(len(df[df[column_name].eq('')]))
+        column_name = "type"
+        midding_data.append(len(df[df[column_name].eq('')]) + len(df[df[column_name].eq('None')]))
+
+        import matplotlib.pyplot as plt
+
+        plt.bar(labels, midding_data)
+
+        plt.xlabel('features')
+        plt.ylabel('counts')
+
+        plt.show()
+
+
+
+    @staticmethod
+    def perform_analysis(analysis):
+        x_value = analysis.data_info.x_values
+        y_value = analysis.data_info.y_values
+        x = np.array(x_value)
+        y = np.array(y_value)
+        results_info = ResultsInfo()
+
+        results_info.intercept, results_info.coef = statistics.linearRegression(x_value, y_value)
+
+        # find the relationship
+        results_info.covariance_matrix = statistics.covariance_matrix(x_value, y_value)
+
+        # to find strength we use pearson correlation coefficient
+        results_info.Pearson_correlation_coefficient = statistics.Pearson_correlation_coefficient(x_value, y_value)
+
+        # Two  variables may be related by a nonlinear relationship
+        results_info.spearman_correlation = statistics.spearman_correlation(x_value, y_value)
+        analysis.results_info = results_info
 
     @staticmethod
     def population_visitors(df, data_map):
         df_clean = df[['population', 'visitor']]
-
-        data = []
         x_population = []
         y_visitor = []
-
         for row_info in df_clean.iterrows():
             row = row_info[1]
             str_population = row["population"]
             if str_population:
                 population = float(row["population"])
                 x_population.append(population)
-
                 key = ","
                 visitor = row['visitor']
                 if key in visitor:
@@ -100,21 +157,9 @@ class MachineLearningManager:
                 visitor = float(visitor)
                 y_visitor.append(visitor)
 
-                data.append([population, visitor])
-
-        x = np.array(x_population)
-        y = np.array(y_visitor)
-        MachineLearningManager.scatter_plot(x, y, " All ")
-        MachineLearningManager.linearRegression(x, y, " All ")
-
-        # find the relationship
-        MachineLearningManager.covariance(x, y)
-
-        # to find strength we use pearson correlation coefficient
-        MachineLearningManager.Pearson_correlation_coefficient(x, y)
-
-        # Two  variables may be related by a nonlinear relationship
-        MachineLearningManager.spearman_correlation(x, y)
+        x_data_info = {"values":x_population,"label":"City Population"}
+        y_data_info = {"values": y_visitor, "label": "Museum Visitors"}
+        return DataInfo(x_data_info=x_data_info, y_data_info=y_data_info)
 
     @staticmethod
     def population_visitors_sum(df, data_map):
@@ -127,12 +172,7 @@ class MachineLearningManager:
         index = -1
         train_id_info = np.zeros((number_cities, number_features), dtype=int)
         for city_data in grouped_df:
-            train_id_label_info = 0
-
             city_info = city_data[1]
-
-            total_visitors = 0
-
             index = index + 1
             for data in city_info.iterrows():
                 str_population = data[1]['population']
@@ -144,7 +184,6 @@ class MachineLearningManager:
                     col = col + 1
                     visitor = float(data[1]['visitor'])
                     train_id_info[index, col] = train_id_info[index, col] + visitor
-
         x_population = []
         y_visitor = []
         for data in train_id_info:
@@ -154,20 +193,9 @@ class MachineLearningManager:
                 #visitor
                 y_visitor.append(data[1])
 
-
-        x = np.array(x_population)
-        y = np.array(y_visitor)
-        MachineLearningManager.scatter_plot(x, y, "All population and  visitor")
-        MachineLearningManager.linearRegression(x, y, " All population and  visitor ")
-
-        # find the relationship
-        MachineLearningManager.covariance(x, y)
-
-        # to find strength we use pearson correlation coefficient
-        MachineLearningManager.Pearson_correlation_coefficient(x,y)
-
-        #Two  variables may be related by a nonlinear relationship
-        MachineLearningManager.spearman_correlation(x, y)
+        x_data_info = {"values": x_population, "label": "City Population"}
+        y_data_info = {"values": y_visitor, "label": "Museum Visitors"}
+        return DataInfo(x_data_info=x_data_info, y_data_info=y_data_info)
 
     @staticmethod
     def population_visitors_max(df, data_map):
@@ -180,12 +208,7 @@ class MachineLearningManager:
         index = -1
         train_id_info = np.zeros((number_cities, number_features), dtype=int)
         for city_data in grouped_df:
-            train_id_label_info = 0
-
             city_info = city_data[1]
-
-            total_visitors = 0
-
             index = index + 1
             for data in city_info.iterrows():
                 str_population = data[1]['population']
@@ -208,20 +231,9 @@ class MachineLearningManager:
                 #visitor
                 y_visitor.append(data[1])
 
-
-        x = np.array(x_population)
-        y = np.array(y_visitor)
-        MachineLearningManager.scatter_plot(x, y, "All population and  visitor")
-        MachineLearningManager.linearRegression(x, y, " All population and  visitor ")
-
-        # find the relationship
-        MachineLearningManager.covariance(x, y)
-
-        # to find strength we use pearson correlation coefficient
-        MachineLearningManager.Pearson_correlation_coefficient(x,y)
-
-        #Two  variables may be related by a nonlinear relationship
-        MachineLearningManager.spearman_correlation(x, y)
+        x_data_info = {"values": x_population, "label": "City Population"}
+        y_data_info = {"values": y_visitor, "label": "Museum Visitors"}
+        return DataInfo(x_data_info=x_data_info, y_data_info=y_data_info)
 
     @staticmethod
     def city_visitor_museum_visitors(df, data_map):
@@ -243,19 +255,9 @@ class MachineLearningManager:
                 visitor = float(visitor)
                 y_visitor.append(visitor)
 
-        x = np.array(x_city_visitor)
-        y = np.array(y_visitor)
-        MachineLearningManager.scatter_plot(x, y, " All ")
-        MachineLearningManager.linearRegression(x, y, " All ")
-
-        # find the relationship
-        MachineLearningManager.covariance(x, y)
-
-        # to find strength we use pearson correlation coefficient
-        MachineLearningManager.Pearson_correlation_coefficient(x, y)
-
-        # Two  variables may be related by a nonlinear relationship
-        MachineLearningManager.spearman_correlation(x, y)
+        x_data_info = {"values": x_city_visitor, "label": "City Visitors"}
+        y_data_info = {"values": y_visitor, "label": "Museum Visitors"}
+        return DataInfo(x_data_info=x_data_info, y_data_info=y_data_info)
 
     @staticmethod
     def city_visitor_museum_visitors_sum(df, data_map):
@@ -295,20 +297,9 @@ class MachineLearningManager:
                 #visitor
                 y_visitor.append(data[1])
 
-
-        x = np.array(x_city_visitor)
-        y = np.array(y_visitor)
-        MachineLearningManager.scatter_plot(x, y, "All population and  visitor")
-        MachineLearningManager.linearRegression(x, y, " All population and  visitor ")
-
-        # find the relationship
-        MachineLearningManager.covariance(x, y)
-
-        # to find strength we use pearson correlation coefficient
-        MachineLearningManager.Pearson_correlation_coefficient(x,y)
-
-        #Two  variables may be related by a nonlinear relationship
-        MachineLearningManager.spearman_correlation(x, y)
+        x_data_info = {"values": x_city_visitor, "label": "City Visitors"}
+        y_data_info = {"values": y_visitor, "label": "Museum Visitors"}
+        return DataInfo(x_data_info=x_data_info, y_data_info=y_data_info)
 
     @staticmethod
     def city_visitor_museum_visitors_max(df, data_map):
@@ -321,12 +312,7 @@ class MachineLearningManager:
         index = -1
         train_id_info = np.zeros((number_cities, number_features), dtype=int)
         for city_data in grouped_df:
-            train_id_label_info = 0
-
             city_info = city_data[1]
-
-            total_visitors = 0
-
             index = index + 1
             for data in city_info.iterrows():
                 str_city_visitor = data[1]['city_visitor']
@@ -349,20 +335,9 @@ class MachineLearningManager:
                 #visitor
                 y_visitor.append(data[1])
 
-
-        x = np.array(x_city_visitor)
-        y = np.array(y_visitor)
-        MachineLearningManager.scatter_plot(x, y, "All population and  visitor")
-        MachineLearningManager.linearRegression(x, y, " All population and  visitor ")
-
-        # find the relationship
-        MachineLearningManager.covariance(x, y)
-
-        # to find strength we use pearson correlation coefficient
-        MachineLearningManager.Pearson_correlation_coefficient(x,y)
-
-        #Two  variables may be related by a nonlinear relationship
-        MachineLearningManager.spearman_correlation(x, y)
+        x_data_info = {"values": x_city_visitor, "label": "City Visitors"}
+        y_data_info = {"values": y_visitor, "label": "Museum Visitors"}
+        return DataInfo(x_data_info=x_data_info, y_data_info=y_data_info)
 
     @staticmethod
     def group_analysis(df, data_map):
@@ -433,18 +408,11 @@ class MachineLearningManager:
 
 
     @staticmethod
-    def get_data(datbase_manager):
-        # wiki_to_database_city_map = {"name": "name", "population_total": "population",
-        #                              "area_total_km2": "size", "population_as_of": "year_reported"}
-        #
-        # wiki_to_database_museum_map = {"name": "name", "visitor": "visitor", "year": "year_reported",
-        #                                "type": "type", "publictransit": "public_transit",
-        #                                "location": "location", "established": "established",
-        #                                "built": "built"}
-        #
-        # data_map = {"city", "visitor", "population", "museum" }
+    def get_data(datbase_manager, data_map_analysis):
+        df =  datbase_manager.load()
+        df_reduced = df[data_map_analysis.keys()]
+        return df_reduced
 
-        return datbase_manager.load()
 
     @staticmethod
     def clean_year(str_year):
@@ -504,28 +472,49 @@ class MachineLearningManager:
 
     @staticmethod
     def do_analysis():
+        data_map_analysis = {"city":"city", "visitor":"visitor",
+                             "population":"population", "museum":"museum",
+                             "city_visitor":"city_visitor"}
         datbase_manager = DatabaseManager.instance()
-        loaded_data = MachineLearningManager.get_data(datbase_manager)
+        loaded_data = MachineLearningManager.get_data(datbase_manager, data_map_analysis)
         cleaned_df =  MachineLearningManager.data_cleanup(loaded_data)
+        # MachineLearningManager.group_bar_chart(cleaned_df)
+        analysis_list = []
         data_map = {"city":"city", "visitor":"visitor", "population":"population", "museum":"museum"}
-        print("===========  population_visitors ===============")
-        MachineLearningManager.population_visitors(cleaned_df, data_map)
-        print("============= population_visitors_max ===============")
-        MachineLearningManager.population_visitors_max(cleaned_df, data_map)
-        print("============= population_visitors_sum ===============")
-        MachineLearningManager.population_visitors_sum(cleaned_df, data_map)
+        data_info = MachineLearningManager.population_visitors(cleaned_df, data_map)
+        analysis_list.append(AnalysisInfo(data_info=data_info,type="All"))
+
+        data_info = MachineLearningManager.population_visitors_max(cleaned_df, data_map)
+        analysis_list.append(AnalysisInfo(data_info=data_info, type="Max"))
+
+        data_info = MachineLearningManager.population_visitors_sum(cleaned_df, data_map)
+        analysis_list.append(AnalysisInfo(data_info=data_info, type="Sum"))
 
         data_map = {"city": "city", "visitor": "visitor", "city_visitor": "city_visitor", "museum": "museum"}
-        print("===========  city_visitors ===============")
-        MachineLearningManager.city_visitor_museum_visitors(cleaned_df, data_map)
-        print("============= city_visitors_max ===============")
-        MachineLearningManager.city_visitor_museum_visitors_max(cleaned_df, data_map)
-        print("============= city_visitors_sum ===============")
-        MachineLearningManager.city_visitor_museum_visitors_sum(cleaned_df, data_map)
+        data_info = MachineLearningManager.city_visitor_museum_visitors(cleaned_df, data_map)
+        analysis_list.append(AnalysisInfo(data_info=data_info, type="All"))
 
-        data_map = {"city": "city", "visitor": "visitor", "population": "population",
-                    "museum": "museum", "city_visitor": "city_visitor",
-                    "established":"established"}
-        MachineLearningManager.group_analysis(cleaned_df, data_map)
+        data_info = MachineLearningManager.city_visitor_museum_visitors_max(cleaned_df, data_map)
+        analysis_list.append(AnalysisInfo(data_info=data_info, type="Max"))
+
+        data_info = MachineLearningManager.city_visitor_museum_visitors_sum(cleaned_df, data_map)
+        analysis_list.append(AnalysisInfo(data_info=data_info, type="Sum"))
+
+        # data_map = {"city": "city", "visitor": "visitor", "population": "population",
+        #             "museum": "museum", "city_visitor": "city_visitor",
+        #             "established":"established"}
+        # MachineLearningManager.group_analysis(cleaned_df, data_map)
+
+        for analysis in analysis_list:
+            x_t = analysis.data_info.x_label
+            y_t = analysis.data_info.y_label
+            type = analysis.type
+            print("============= " + x_t + "-" + y_t + "-" + type + " ===============")
+            MachineLearningManager.perform_analysis(analysis)
+            analysis.print()
+
+
+        # plot_size = MachineLearningManager.get_plot_size(6)
+        # MachineLearningManager.scatter_plots(plot_size, x_values, y_values, x_title, y_title, type_analysis,intercepts, coefs, "Analysis")
 
         return True
