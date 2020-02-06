@@ -63,22 +63,17 @@ def USE_REQUEST(page_name, do_debug=False):
     return text, redirect_page
 
 
-def USE_REQUEST_new(page_name = "None", do_debug=False):
+def USE_REQUEST_csv(do_debug=False):
     S = requests.Session()
 
     URL = "http://www.worldcitiescultureforum.com/assets/city_data/Number_of_international_tourists_per_year_7112018.csv"
 
     R = S.get(url=URL)
     text = R.text
-
-    redirect_page = False
-    if text.startswith('this') and "[[" in text and "]]" in text:
-        redirect_page = True
-
     if do_debug:
-        file_name = page_name +".txt"
+        file_name = "international_tourists" +".txt"
         full_path = util.get_full_output_path(file_name)
         text_file = open(full_path, "w", encoding="utf-8")
         text_file.write(text)
         text_file.close()
-    return text, redirect_page
+    return text
