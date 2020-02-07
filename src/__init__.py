@@ -9,4 +9,6 @@ import src.log_manager
 import src.database_manager
 import src.machine_learning_manager
 import src.data_fetch_manager
+import src.statistics
+import src.plots
 

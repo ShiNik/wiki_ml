@@ -7,7 +7,8 @@ main_page_name = "List of most visited museums"
 
 #Database
 wiki_to_database_city_map = {"name":"name", "population_total":"population",
-                             "area_total_km2":"size", "population_as_of":"year_reported"}
+                             "area_total_km2":"size", "population_as_of":"year_reported",
+                             "city_visitor":"city_visitor", "city_visitor_reported_year":"city_visitor_reported_year"}
 
 wiki_to_database_museum_map = {"name":"name", "visitor":"visitor", "year":"year_reported",
                                "type":"type", "publictransit":"public_transit",
