@@ -1,26 +1,8 @@
 #user define imports
-import src.util as util
-from src.database_manager import DatabaseManager
-import src.statistics as statistics
 
 #python imports
 import numpy as np
-import re
-
-def scatter_plot(x_value, y_value, x_title, y_title, type_analysis):
-    import matplotlib.pyplot as plt
-    fig = plt.figure()
-    ax = fig.add_axes([0, 0, 1, 1])
-    ax.scatter(x_value, y_value, color='r')
-    ax.set_xlabel(x_title)
-    ax.set_ylabel(y_title)
-    ax.set_title('scatter plot ' + type_analysis)
-    xx = np.zeros(2)
-    xx[0] = np.min(x_value)
-    xx[1] = np.max(x_value)
-    yy = xx + 10
-    plt.plot(xx, yy, linestyle="solid")
-    plt.show()
+import matplotlib.pyplot as plt
 
 def get_plot_size(num_items):
     num_col = 2
@@ -64,25 +46,4 @@ def scatter_plots(analysis_list, plot_title):
         ax.plot(xx, yy, linestyle="solid", label=eq_line)
     plt.show()
 
-def group_bar_chart(df):
-    labels = ['visitor', 'population', 'city_visitor', 'established', 'type']
-    midding_data = []
-    column_name = "visitor"
-    midding_data.append(len(df[df[column_name].eq('')]))
-    column_name = "population"
-    midding_data.append(len(df[df[column_name].eq('')]))
-    column_name = "city_visitor"
-    midding_data.append(len(df[df[column_name].eq('')]))
-    column_name = "established"
-    midding_data.append(len(df[df[column_name].eq('')]))
-    column_name = "type"
-    midding_data.append(len(df[df[column_name].eq('')]) + len(df[df[column_name].eq('None')]))
 
-    import matplotlib.pyplot as plt
-
-    plt.bar(labels, midding_data)
-
-    plt.xlabel('features')
-    plt.ylabel('counts')
-
-    plt.show()

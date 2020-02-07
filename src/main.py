@@ -1,11 +1,8 @@
 #user define imports
-from src.factory import ParserGenerator as ParserGenerator
-import src.wiki_extractor as extractor
-import src.util as util
 from  src.log_manager import LogManager
 from src.database_manager import DatabaseManager
 import src.config as config
-from  src.parser import TableParser
+import src.plots as plots
 
 import src.machine_learning_manager as ml
 import src.data_fetch_manager as data_fetch

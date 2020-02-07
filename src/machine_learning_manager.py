@@ -39,6 +39,11 @@ class AnalysisInfo:
         if self.results_info is not None :
             self.results_info.print(self.type)
 
+    def get_name(self):
+        name =  ""
+        if self.data_info is not None:
+             name = self.data_info.x_label + " - " + self.data_info.y_label + " - " + self.type
+        return name
 
 class MachineLearningManager:
     def __init__(self):
@@ -360,7 +365,7 @@ class MachineLearningManager:
             x_t = analysis.data_info.x_label
             y_t = analysis.data_info.y_label
             type = analysis.type
-            print("============= " + x_t + "-" + y_t + "-" + type + " ===============")
+            print("============= " + analysis.get_name() + " ===============")
             MachineLearningManager.perform_analysis(analysis)
             analysis.print()
 

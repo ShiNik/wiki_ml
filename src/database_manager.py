@@ -197,10 +197,6 @@ class DatabaseManager():
 
             new_museum = Museum(museum_infos, new_city.id)
             self.session.add(new_museum)
-
-            museum_infos["name"]= "tehran"
-            new_museum_2 = Museum(museum_infos, new_city.id)
-            self.session.add(new_museum_2)
             # save data to the database
             self.session.commit()
 
@@ -210,25 +206,6 @@ class DatabaseManager():
         except ProgrammingError as E:
             print(E.args[0])
             raise E.args[0]
-
-    # def query_to_list(self, rset):
-    #     """List of result
-    #     Return: columns name, list of result
-    #     """
-    #     result = []
-    #     for obj in rset:
-    #         instance = inspect(obj)
-    #         items = instance.attrs.items()
-    #         result.append([x.value for _, x in items])
-    #     return instance.attrs.keys(), result
-    #
-    # def query_to_dict(self, rset):
-    #     result = defaultdict(list)
-    #     for obj in rset:
-    #         instance = inspect(obj)
-    #         for key, x in instance.attrs.items():
-    #             result[key].append(x.value)
-    #     return result
 
     def object_as_dict(self, obj):
         return {c.key: getattr(obj, c.key)
