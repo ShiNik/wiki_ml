@@ -1,6 +1,6 @@
 # user define imports
-import src.util as util
-from src.log_manager import LogManager
+from my_package import util as util
+from my_package.log_manager import LogManager
 
 # python imports
 import wikitextparser as wtp

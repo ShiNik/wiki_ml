@@ -1,5 +1,3 @@
-# user define imports
-
 # python imports
 import re
 

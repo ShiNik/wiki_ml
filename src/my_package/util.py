@@ -1,5 +1,5 @@
 # user define imports
-import src.config as config
+from my_package import config as config
 
 # python imports
 import os

@@ -1,12 +1,12 @@
 # user define imports
-import src.util as util
-from src.log_manager import LogManager
-from src.database_manager import DatabaseManager
-import src.statistics as statistics
-import src.visualizer as visualizer
-from src.machine_learning_components import LinearRegression
-from src.data_processor import DataProcessor
-from src.analysis_info import AnalysisInfo, DataInfo, ResultsInfo
+from my_package import util as util
+from my_package.log_manager import LogManager
+from my_package.database_manager import DatabaseManager
+from my_package import statistics as statistics
+from my_package import visualizer as visualizer
+from my_package.machine_learning_components import LinearRegression
+from my_package.data_processor import DataProcessor
+from my_package.analysis_info import AnalysisInfo, DataInfo, ResultsInfo
 
 
 # python imports
@@ -61,6 +61,8 @@ class MachineLearningManager:
 
         for analysis in analysis_list:
             LinearRegression.perform_analysis(analysis)
-            visualizer.print_result(analysis)
+            if logger.debug_enabled():
+                visualizer.print_result(analysis)
 
-        visualizer.scatter_plots(analysis_list, " Linear Regression analysis results")
+        visualizer.scatter_plots(analysis_list, "Linear Regression analysis results")
+        visualizer.print_smart_table(analysis_list, " Linear Regression analysis results")

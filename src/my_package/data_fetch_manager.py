@@ -1,10 +1,10 @@
 # user define imports
-from src.factory import ParserGenerator as ParserGenerator
-import src.wiki_extractor as extractor
-import src.util as util
-from src.database_manager import DatabaseManager
-from src.parser import TableParser
-from src.log_manager import LogManager
+from my_package.factory import ParserGenerator as ParserGenerator
+from my_package import wiki_extractor as extractor
+from my_package import util as util
+from my_package.database_manager import DatabaseManager
+from my_package.parser import TableParser
+from my_package.log_manager import LogManager
 
 # python imports
 import re

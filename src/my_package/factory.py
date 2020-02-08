@@ -1,5 +1,5 @@
 # user define imports
-import parser as prs
+from my_package import parser as prs
 
 
 class ParserGenerator:

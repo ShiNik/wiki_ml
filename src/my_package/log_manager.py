@@ -1,6 +1,6 @@
 # user define imports
-import src.util as util
-from src.singleton import Singleton
+from my_package import util as util
+from my_package.singleton import Singleton
 
 # python imports
 import logging
@@ -53,7 +53,7 @@ class LogManager():
     def get_log_level(self):
         return util.convert_to_const(self.logger.level)
 
-    def debug_enabled(self, ):
+    def debug_enabled(self):
         log_level = self.get_log_level()
         if log_level == self.debug_level:
             return True

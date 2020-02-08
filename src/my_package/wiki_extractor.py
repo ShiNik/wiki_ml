@@ -1,9 +1,9 @@
 # user define imports
+from my_package import util as util
+from my_package.log_manager import LogManager
+
 # python imports
 import requests
-
-import src.util as util
-from src.log_manager import LogManager
 
 
 def make_request(page_name, section_id):
