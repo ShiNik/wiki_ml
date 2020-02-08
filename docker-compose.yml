@@ -1,6 +1,7 @@
 version: '2'
 services:
   dbpostgres:
+    container_name: postgres_db
     image: postgres
     volumes:
       - .:/var/lib/postgresql
@@ -12,6 +13,7 @@ services:
       POSTGRES_USER: pguser
       POSTGRES_PASSWORD: pguser
       POSTGRES_DB: pgdb
+    restart: unless-stopped
 
   pgadmin:
     container_name: pgadmin_container
@@ -27,6 +29,15 @@ services:
       - homework
     restart: unless-stopped
 
-networks:
-  homework:
-    driver: bridge
+  python_app:
+    build: ./dir
+    image: shinik/wiki_ml:latest   
+    container_name: ml_application
+    volumes:
+      - .:/usr/src
+    ports:
+      -"8888:8888"
+    networks:
+      - homework
+    restart: unless-stopped
+
