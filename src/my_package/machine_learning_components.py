@@ -1,6 +1,6 @@
 # user define imports
-import src.statistics as statistics
-from src.analysis_info import ResultsInfo
+from my_package import statistics as statistics
+from my_package.analysis_info import ResultsInfo
 
 # python imports
 import numpy as np
@@ -24,7 +24,7 @@ class LinearRegression(MachineLearningComponents):
         y = np.array(y_value)
         results_info = ResultsInfo()
 
-        results_info.intercept, results_info.coef = statistics.linearRegression(x_value, y_value)
+        results_info.intercept, results_info.coefficient = statistics.linearRegression(x_value, y_value)
 
         # find the relationship
         results_info.covariance_matrix = statistics.covariance_matrix(x_value, y_value)

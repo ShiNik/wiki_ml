@@ -1,7 +1,7 @@
 # user define imports
-import src.util as util
-from src.analysis_info import AnalysisInfo, DataInfo, ResultsInfo
-from src.data_cleaner import DataCleaner
+from my_package import util as util
+from my_package.analysis_info import AnalysisInfo, DataInfo, ResultsInfo
+from my_package.data_cleaner import DataCleaner
 
 # python imports
 import numpy as np

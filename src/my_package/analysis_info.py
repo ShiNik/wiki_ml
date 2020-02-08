@@ -1,8 +1,3 @@
-# user define imports
-
-# python imports
-
-
 class DataInfo:
     def __init__(self, x_data_info, y_data_info):
         self.x_values = x_data_info["values"]
@@ -14,13 +9,20 @@ class DataInfo:
 class ResultsInfo:
     def __init__(self):
         self.intercept = None
-        self.coef = None
+        self.coefficient = None
         self.covariance_matrix = None
         self.Pearson_correlation_coefficient = None
         self.spearman_correlation = None
+
+    def get_eq_line(self):
+        intercept = list(map('{:.3f}'.format, self.intercept))[0]
+        coefficient = list(map('{:.3f}'.format, self.coefficient[0]))[0]
+        eq_line = "Y = " + coefficient + " * X + " + intercept
+        return eq_line
+
      # todo: is it necessary to pass in type param here
     def print(self, type):
-        print("intercept: ", self.intercept, ", coef: ", self.coef)
+        print("intercept: ", self.intercept, ", coefficient: ", self.coefficient)
         print(self.covariance_matrix)
         print("Pearson_correlation_coefficient: ", self.Pearson_correlation_coefficient)
         print("spearman_correlation: ", self.spearman_correlation)
