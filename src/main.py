@@ -1,29 +1,30 @@
-#user define imports
-from  src.log_manager import LogManager
+# user define imports
+from src.log_manager import LogManager
 from src.database_manager import DatabaseManager
 import src.config as config
-import src.plots as plots
 
 import src.machine_learning_manager as ml
 import src.data_fetch_manager as data_fetch
 
-#step 1: parse the main page : List_of_most_visited_museums
-#step 2: generate the table
-#spet 3: parse the musium page
-#step 4: extract musium information
-#spet 5: parse the city page
-#step 6: extract city information
+
+# step 1: parse the main page : List_of_most_visited_museums
+# step 2: generate the table
+# stet 3: parse the museum page
+# step 4: extract museum information
+# step 5: parse the city page
+# step 6: extract city information
 
 def print_main_menu():
-    print('press d for data fetching: ')
+    print('press d to fetch data: ')
     print('press m for ml: ')
     print('press e for exit: ')
 
+
 def main():
-    logger = LogManager()
-    logger.log("Staring the application!", LogManager.Logging_Levels["DEBUG"])
-    datbase_manager = DatabaseManager.instance()
-    datbase_manager.init(config)
+    logger = LogManager.instance()
+    logger.log("Staring the application!", logger.Logging_Levels["DEBUG"])
+    database_manager = DatabaseManager.instance()
+    database_manager.init(config)
 
     print_main_menu()
     general_action = input()
@@ -35,8 +36,9 @@ def main():
         return
 
     if general_action == 'd':
-        datbase_manager.delete_all_data()
-        data_fetch.DataFetchManager.fetching_data(config,logger)
+        database_manager.delete_all_data()
+        data_fetch.DataFetchManager.fetch_data(config)
         return
+
 
 main()

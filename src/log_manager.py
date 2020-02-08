@@ -1,21 +1,26 @@
-#user define imports
+# user define imports
 import src.util as util
+from src.singleton import Singleton
 
-#python imports
+# python imports
 import logging
 
-class LogManager():
-    #static data member
-    Logging_Levels = {"CRITICAL":50,"ERROR":40,"WARNING":30,"INFO":20,"DEBUG":10,"NOTSET":0}
 
+@Singleton
+class LogManager():
     def __init__(self):
-        self.logger = self.init_logger()
+        self.Logging_Levels = {"CRITICAL": 50, "ERROR": 40, "WARNING": 30, "INFO": 20, "DEBUG": 10, "NOTSET": 0}
+        self.initialized = False
+        self.logger = self.init()
         self.debug_level = logging.WARNING
         self.set_color_enabled = False
+        return
 
-    def init_logger(self):
-        # Create a custom logger
-        # logger = logging.getLogger(__name__)
+    def init(self):
+        if self.initialized:
+            return
+
+        self.initialized = True
         logger = logging.getLogger('root')
         logger.setLevel(logging.DEBUG)
         # Create handlers
@@ -46,9 +51,9 @@ class LogManager():
         return self.logger
 
     def get_log_level(self):
-        return util.conver_to_const(self.logger.level)
+        return util.convert_to_const(self.logger.level)
 
-    def debug_enabled(self,):
+    def debug_enabled(self, ):
         log_level = self.get_log_level()
         if log_level == self.debug_level:
             return True
@@ -59,15 +64,15 @@ class LogManager():
         self.set_color_enabled = value
 
     def get_set_color_enabled(self):
-         return util.conver_to_const(self.set_color_enabled)
+        return util.convert_to_const(self.set_color_enabled)
 
     def set_color(self, org_string):
         color_levels = {
-            10: "\033[36m{}\033[0m",       # DEBUG
-            20: "\033[32m{}\033[0m",       # INFO
-            30: "\033[33m{}\033[0m",       # WARNING
-            40: "\033[31m{}\033[0m",       # ERROR
-            50: "\033[7;31;31m{}\033[0m"   # FATAL/CRITICAL/EXCEPTION
+            10: "\033[36m{}\033[0m",  # DEBUG
+            20: "\033[32m{}\033[0m",  # INFO
+            30: "\033[33m{}\033[0m",  # WARNING
+            40: "\033[31m{}\033[0m",  # ERROR
+            50: "\033[7;31;31m{}\033[0m"  # FATAL/CRITICAL/EXCEPTION
         }
 
         level = self.get_log_level()
@@ -79,20 +84,20 @@ class LogManager():
     def get_log_function(self, log_function_type):
         switcher = {
             # "CRITICAL": 50, "ERROR": 40, "WARNING": 30, "INFO": 20, "DEBUG": 10, "NOTSET": 0
-            LogManager.Logging_Levels["CRITICAL"]:   self.logger.critical,
-            LogManager.Logging_Levels["ERROR"]: self.logger.error,
-            LogManager.Logging_Levels["WARNING"]: self.logger.warn,
-            LogManager.Logging_Levels["INFO"]: self.logger.info,
-            LogManager.Logging_Levels["DEBUG"]: self.logger.debug,
+            self.Logging_Levels["CRITICAL"]: self.logger.critical,
+            self.Logging_Levels["ERROR"]: self.logger.error,
+            self.Logging_Levels["WARNING"]: self.logger.warn,
+            self.Logging_Levels["INFO"]: self.logger.info,
+            self.Logging_Levels["DEBUG"]: self.logger.debug,
         }
 
-        loger_function = None
-        loger_function = switcher.get(log_function_type, None)
-        if loger_function == None:
-            loger_function = self.logger.debug
-        return loger_function
+        logger_function = None
+        logger_function = switcher.get(log_function_type, None)
+        if logger_function is None:
+            logger_function = self.logger.debug
+        return logger_function
 
-    def log(self, message, log_function_type = "DEBUG"):
+    def log(self, message, log_function_type="DEBUG"):
         color_enabled = self.get_set_color_enabled()
-        colored_message =  self.set_color(message) if color_enabled else message
+        colored_message = self.set_color(message) if color_enabled else message
         self.get_log_function(log_function_type)(colored_message)

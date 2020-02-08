@@ -1,8 +1,7 @@
-#user define imports
-
-#python imports
+# python imports
 import numpy as np
 import matplotlib.pyplot as plt
+
 
 def get_plot_size(num_items):
     num_col = 2
@@ -47,3 +46,11 @@ def scatter_plots(analysis_list, plot_title):
     plt.show()
 
 
+def print_result(analysis):
+    print("============= " + analysis.get_name() + " ===============")
+    analysis.print()
+
+
+def print_results(analysis_list):
+    for analysis in analysis_list:
+        print_result(analysis)
