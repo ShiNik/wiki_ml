@@ -1,61 +1,65 @@
-#user define imports
-import src.config as config
-import src.util as util
-
-#python imports
+# user define imports
+# python imports
 import requests
 
-def USE_REQUEST(page_name, section_id, do_debug=False):
-    S = requests.Session()
+import src.util as util
+from src.log_manager import LogManager
 
-    URL = "https://en.wikipedia.org/w/api.php"
 
-    PARAMS = {
-        "action": "parse", #"parse","query",
+def make_request(page_name, section_id):
+    session = requests.Session()
+
+    url = "https://en.wikipedia.org/w/api.php"
+
+    params = {
+        "action": "parse",  # "parse","query",
         "page": page_name,
-        "prop":  "wikitext", #"wikitext","parsetree", "text"
+        "prop": "wikitext",  # "wikitext","parsetree", "text"
         "section": section_id,
         "format": "json"
     }
 
-    R = S.get(url=URL, params=PARAMS)
-    DATA = R.json()
+    result = session.get(url=url, params=params)
+    data = result.json()
 
-    text = DATA["parse"]["wikitext"]["*"]
+    text = data["parse"]["wikitext"]["*"]
     redirect_page = False
     if text.startswith('this') and "[[" in text and "]]" in text:
         redirect_page = True
 
-    if do_debug:
-        file_name = page_name +".txt"
+    logger = LogManager.instance()
+    if logger.debug_enabled():
+        file_name = page_name + ".txt"
         full_path = util.get_full_output_path(file_name)
         text_file = open(full_path, "w", encoding="utf-8")
         text_file.write(text)
         text_file.close()
     return text, redirect_page
 
-def USE_REQUEST(page_name, do_debug=False):
-    S = requests.Session()
 
-    URL = "https://en.wikipedia.org/w/api.php"
+def make_request(page_name):
+    session = requests.Session()
 
-    PARAMS = {
-        "action": "parse", #"parse","query",
+    url = "https://en.wikipedia.org/w/api.php"
+
+    params = {
+        "action": "parse",  # "parse","query",
         "page": page_name,
-        "prop":  "wikitext", #"wikitext","parsetree", "text"
+        "prop": "wikitext",  # "wikitext","parsetree", "text"
         "format": "json"
     }
 
-    R = S.get(url=URL, params=PARAMS)
-    DATA = R.json()
+    result = session.get(url=url, params=params)
+    data = result.json()
 
-    text = DATA["parse"]["wikitext"]["*"]
+    text = data["parse"]["wikitext"]["*"]
     redirect_page = False
     if text.startswith('this') and "[[" in text and "]]" in text:
         redirect_page = True
 
-    if do_debug:
-        file_name = page_name +".txt"
+    logger = LogManager.instance()
+    if logger.debug_enabled():
+        file_name = page_name + ".txt"
         full_path = util.get_full_output_path(file_name)
         text_file = open(full_path, "w", encoding="utf-8")
         text_file.write(text)
@@ -63,15 +67,16 @@ def USE_REQUEST(page_name, do_debug=False):
     return text, redirect_page
 
 
-def USE_REQUEST_csv(do_debug=False):
-    S = requests.Session()
+def make_request_csv():
+    session = requests.Session()
 
-    URL = "http://www.worldcitiescultureforum.com/assets/city_data/Number_of_international_tourists_per_year_7112018.csv"
+    url = "http://www.worldcitiescultureforum.com/assets/city_data/Number_of_international_tourists_per_year_7112018.csv"
 
-    R = S.get(url=URL)
-    text = R.text
-    if do_debug:
-        file_name = "international_tourists" +".txt"
+    result = session.get(url=url)
+    text = result.text
+    logger = LogManager.instance()
+    if logger.debug_enabled():
+        file_name = "international_tourists" + ".txt"
         full_path = util.get_full_output_path(file_name)
         text_file = open(full_path, "w", encoding="utf-8")
         text_file.write(text)
