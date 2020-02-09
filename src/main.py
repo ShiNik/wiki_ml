@@ -32,10 +32,11 @@ def main():
         return
 
     if general_action == 'm':
-        ml.MachineLearningManager.do_analysis()
+        ml.MachineLearningManager.do_analysis(config)
         return
 
     if general_action == 'd':
+        return
         database_manager.delete_all_data()
         data_fetch.DataFetchManager.fetch_data(config)
         return

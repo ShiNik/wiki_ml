@@ -1,9 +1,12 @@
 # user define imports
 from my_package.analysis_info import AnalysisInfo, DataInfo, ResultsInfo
 from my_package.data_cleaner import DataCleaner
+from my_package import visualizer as visualizer
 
 # python imports
 import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
 
 
 class DataProcessor:
@@ -15,25 +18,35 @@ class DataProcessor:
         return DataCleaner.perform_cleanup(df)
 
     @staticmethod
-    def population_visitors(df, data_map):
-        df_clean = df[['population', 'visitor']]
-        x_population = []
-        y_visitor = []
-        for row_info in df_clean.iterrows():
-            row = row_info[1]
-            str_population = row["population"]
-            if str_population:
-                population = float(row["population"])
-                x_population.append(population)
-                key = ","
-                visitor = row['visitor']
-                if key in visitor:
-                    visitor = visitor.replace(",", "")
-                visitor = float(visitor)
-                y_visitor.append(visitor)
+    def train_test_split(dataset, x_name, y_name, test_size):
+        X = dataset[x_name].values.reshape(-1, 1)
+        y = dataset[y_name].values.reshape(-1, 1)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+        return X_train, X_test, y_train, y_test
 
-        x_data_info = {"values": x_population, "label": "City Population"}
-        y_data_info = {"values": y_visitor, "label": "Museum Visitors"}
+    @staticmethod
+    def population_visitors(df, data_map, config):
+
+        df_selected = df[['population', 'visitor']]
+        df_selected.loc[:, 'population'] = pd.to_numeric(df_selected.loc[:, 'population'])
+        df_selected.loc[:, 'visitor'] = pd.to_numeric(df_selected.loc[:, 'visitor'])
+        df_clean = df_selected.dropna()
+
+        file_name = "2D_Graph_cleaned_data_distribution City Population vs Museum Visitors.png"
+        silent_mode_enabled = config.silent_mode_enabled
+        visualizer.plot_data_distribution(df_clean['visitor'], file_name, silent_mode_enabled)
+
+        labels = {"x": ["population", "City Population"], "y": ["visitor", "Museum Visitors"]}
+        visualizer.plot_data(df_clean, labels, silent_mode_enabled)
+
+        x_population = df_clean['population'].to_numpy()
+        y_visitor = df_clean['visitor'].to_numpy()
+
+        visualizer.quantile_quantile_plot(y_visitor, silent_mode_enabled)
+
+        X_train, X_test, y_train, y_test = DataProcessor.train_test_split(df_clean, "population", "visitor", 0.2)
+        x_data_info = {"values": x_population.tolist(), "label": "City Population", "train":X_train, "test":X_test}
+        y_data_info = {"values": y_visitor.tolist(), "label": "Museum Visitors", "train":y_train, "test":y_test}
         return DataInfo(x_data_info=x_data_info, y_data_info=y_data_info)
 
     @staticmethod
@@ -111,27 +124,27 @@ class DataProcessor:
         return DataInfo(x_data_info=x_data_info, y_data_info=y_data_info)
 
     @staticmethod
-    def city_visitor_museum_visitors(df, data_map):
-        df_clean = df[['city_visitor', 'visitor']]
-        x_city_visitor = []
-        y_visitor = []
+    def city_visitor_museum_visitors(df, data_map, config):
 
-        for row_info in df_clean.iterrows():
-            row = row_info[1]
-            str_city_visitor = row["city_visitor"]
-            if str_city_visitor:
-                city_visitor = float(row["city_visitor"])
-                x_city_visitor.append(city_visitor)
+        df_selected = df[['city_visitor', 'visitor']]
+        df_selected.loc[:, 'city_visitor'] = pd.to_numeric(df_selected.loc[:, 'city_visitor'])
+        df_selected.loc[:, 'visitor'] = pd.to_numeric(df_selected.loc[:, 'visitor'])
+        df_clean = df_selected.dropna()
 
-                key = ","
-                visitor = row['visitor']
-                if key in visitor:
-                    visitor = visitor.replace(",", "")
-                visitor = float(visitor)
-                y_visitor.append(visitor)
+        file_name = "2D_Graph_cleaned_data_distribution City Visitors vs Museum Visitors.png"
+        silent_mode_enabled = config.silent_mode_enabled
+        visualizer.plot_data_distribution(df_clean['visitor'], file_name, silent_mode_enabled)
 
-        x_data_info = {"values": x_city_visitor, "label": "City Visitors"}
-        y_data_info = {"values": y_visitor, "label": "Museum Visitors"}
+        labels = {"x": ["city_visitor", "City Visitors"], "y": ["visitor", "Museum Visitors"]}
+        visualizer.plot_data(df_clean, labels, silent_mode_enabled)
+
+        x_city_visitor = df_clean['city_visitor'].to_numpy()
+        y_visitor = df_clean['visitor'].to_numpy()
+
+        X_train, X_test, y_train, y_test = DataProcessor.train_test_split(df_clean, "city_visitor", "visitor", 0.2)
+
+        x_data_info = {"values": x_city_visitor.tolist(), "label": "City Visitors", "train":X_train, "test":X_test}
+        y_data_info = {"values": y_visitor.tolist(), "label": "Museum Visitors", "train":y_train, "test":y_test}
         return DataInfo(x_data_info=x_data_info, y_data_info=y_data_info)
 
     @staticmethod
@@ -213,3 +226,68 @@ class DataProcessor:
         x_data_info = {"values": x_city_visitor, "label": "City Visitors"}
         y_data_info = {"values": y_visitor, "label": "Museum Visitors"}
         return DataInfo(x_data_info=x_data_info, y_data_info=y_data_info)
+
+
+    @staticmethod
+    def multiple_linear_data(dataset, data_map, config):
+        #todo: this function should be refactor,
+        # new machine _learning_component is needed
+
+        dataset = dataset[data_map.keys()]
+        dataset.loc[:, 'population'] = pd.to_numeric(dataset.loc[:, 'population'])
+        dataset.loc[:, 'visitor'] = pd.to_numeric(dataset.loc[:, 'visitor'])
+        dataset.loc[:, 'established'] = pd.to_numeric(dataset.loc[:, 'established'])
+        dataset.loc[:, 'city_visitor'] = pd.to_numeric(dataset.loc[:, 'city_visitor'])
+
+        dataset = dataset.dropna()
+        museum_types = dataset["type"].unique()
+        museum_id = 0
+        for type in museum_types:
+            if type:
+                museum_id = museum_id + 1
+                dataset.loc[dataset["type"] == type, "type"] = museum_id
+            else:
+                dataset.loc[dataset["type"] == type, "type"] = -1
+
+        dataset= dataset[dataset["type"] != -1]
+
+        X = dataset[['population', 'established', 'city_visitor', 'type']].values
+        y = dataset['visitor'].values
+        file_name = "2D_Graph_cleaned_data_distribution multiple linear s vs Museum Visitors.png"
+        silent_mode_enabled = config.silent_mode_enabled
+        visualizer.plot_data_distribution(dataset['visitor'], file_name, silent_mode_enabled)
+
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+
+        x_data_info = {"values": None, "label": "multiple_linear", "train": X_train, "test": X_test}
+        y_data_info = {"values": None, "label": "Museum Visitors", "train": y_train, "test": y_test}
+        data_info = DataInfo(x_data_info=x_data_info, y_data_info=y_data_info)
+        analysis = AnalysisInfo(data_info=data_info, type="All")
+
+        from sklearn.linear_model import LinearRegression
+        from sklearn import metrics
+
+        regressor = LinearRegression()
+        regressor.fit(X_train, y_train)  # training the algorithm
+        y_pred = regressor.predict(X_test)
+        df = pd.DataFrame({'Actual': y_test.flatten(), 'Predicted': y_pred.flatten()})
+
+
+        analysis.results_info = ResultsInfo()
+        analysis.results_info.prediction = y_pred
+        analysis.results_info.y_test = y_test
+
+        visualizer.plot_results(analysis, silent_mode_enabled)
+
+        print("========== Multiple linear regression =================")
+        print(df)
+        # For retrieving the slope:
+        print('coefficient',"\n")
+        print("population: ", regressor.coef_[0])
+        print("established: ", regressor.coef_[1])
+        print("city_visitor: ", regressor.coef_[2])
+        print("type: ", regressor.coef_[3])
+        print('Intercept:', regressor.intercept_)
+        print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, y_pred))
+        print('Mean Squared Error:', metrics.mean_squared_error(y_test, y_pred))
+        print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))

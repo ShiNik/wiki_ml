@@ -24,8 +24,14 @@ def spearman_correlation(x_value, y_value):
     return correlation
 
 
-def linearRegression(x_value, y_value):
+def linear_regression_old(x_value, y_value):
     X = np.array(x_value).reshape(-1, 1)
     y = np.array(y_value).reshape(-1, 1)
-    reg = LinearRegression().fit(X, y)
-    return reg.intercept_, reg.coef_
+    model = LinearRegression()
+    reg = model.fit(X, y)
+    return model, reg.intercept_, reg.coef_
+
+def linear_regression(x_value, y_value):
+    model = LinearRegression()
+    reg = model.fit(x_value, y_value)
+    return model, reg.intercept_, reg.coef_
