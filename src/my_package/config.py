@@ -2,6 +2,8 @@
 log_path_root = 'logs'
 output_path_root = 'output'
 
+silent_mode_enabled = True
+
 # Data
 main_page_name = "List of most visited museums"
 
@@ -14,7 +16,6 @@ wiki_to_database_museum_map = {"name": "name", "visitor": "visitor", "year": "ye
                                "type": "type", "publictransit": "public_transit",
                                "location": "location", "established": "established",
                                "built": "built"}
-
 database_name = "test"
 database_type = "postgres"
 database_user_name = "pguser"

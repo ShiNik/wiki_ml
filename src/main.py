@@ -2,15 +2,9 @@
 import my_package
 from my_package import config
 from my_package.log_manager import LogManager
-from my_package.database_manager import  DatabaseManager
+from my_package.database_manager import DatabaseManager
 from my_package import machine_learning_manager as ml
 from my_package import data_fetch_manager as data_fetch
-
-# from src.log_manager import LogManager
-# from src.database_manager import DatabaseManager
-# import src.config as config
-# import src.machine_learning_manager as ml
-# import src.data_fetch_manager as data_fetch
 
 
 # step 1: parse the main page : List_of_most_visited_museums
@@ -38,10 +32,11 @@ def main():
         return
 
     if general_action == 'm':
-        ml.MachineLearningManager.do_analysis()
+        ml.MachineLearningManager.do_analysis(config)
         return
 
     if general_action == 'd':
+        return
         database_manager.delete_all_data()
         data_fetch.DataFetchManager.fetch_data(config)
         return

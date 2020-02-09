@@ -12,7 +12,7 @@ class LogManager():
         self.Logging_Levels = {"CRITICAL": 50, "ERROR": 40, "WARNING": 30, "INFO": 20, "DEBUG": 10, "NOTSET": 0}
         self.initialized = False
         self.logger = self.init()
-        self.debug_level = logging.WARNING
+        self.debug_level = logging.DEBUG
         self.set_color_enabled = False
         return
 
