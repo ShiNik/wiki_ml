@@ -1,21 +1,23 @@
 version: '2'
 services:
   dbpostgres:
+    container_name: postgres_db
     image: postgres
     volumes:
       - .:/var/lib/postgresql
     ports:
       - "5432:5432"
-    networks:
-      - homework
     environment:
       POSTGRES_USER: pguser
       POSTGRES_PASSWORD: pguser
       POSTGRES_DB: pgdb
+    restart: unless-stopped
 
   pgadmin:
     container_name: pgadmin_container
     image: dpage/pgadmin4
+    depends_on:
+      - dbpostgres
     environment:
       PGADMIN_DEFAULT_EMAIL: snikfal@gmail.com
       PGADMIN_DEFAULT_PASSWORD: pguser
@@ -23,10 +25,21 @@ services:
        - .:/root/.pgadmin
     ports:
       - "8080:80"
-    networks:
-      - homework
     restart: unless-stopped
 
-networks:
-  homework:
-    driver: bridge
+  ml_app:
+    container_name: jupyter
+    image: jupyter/minimal-notebook:latest 
+    depends_on:
+      - dbpostgres
+      - pgadmin  
+    volumes:
+      - .:/home/jovyan/src
+    ports:
+      - "8888:8888"
+    restart: unless-stopped
+
+
+
+
+
