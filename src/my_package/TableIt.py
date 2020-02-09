@@ -2,9 +2,6 @@
 
 # python imports
 import os
-import math
-import random
-
 
 def initColors():
     os.system("cls")
@@ -128,11 +125,14 @@ def createRowUnderFields(largestElementLength, cols, finalTable):
 
 
 def printRowsInTable(finalTable):
+    table_in_string = ""
     print("\n\n")
     # For each row - print it
     for row in finalTable:
         print(row)
+        table_in_string = table_in_string + "\n"+ row
 
+    return table_in_string
 
 def printTable(matrix, title, useFieldNames=False, color=None):
     location = int(len(matrix[0])/2)
@@ -161,4 +161,4 @@ def printTable(matrix, title, useFieldNames=False, color=None):
     if (useFieldNames):
         createRowUnderFields(largestElementLength, cols, finalTable)
 
-    printRowsInTable(finalTable)
+    return printRowsInTable(finalTable)

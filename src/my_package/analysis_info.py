@@ -5,6 +5,17 @@ class DataInfo:
         self.y_values = y_data_info["values"]
         self.y_label = y_data_info["label"]
 
+        if "train" not in x_data_info or "train" not in y_data_info:
+            self.x_train = None
+            self.x_test = None
+            self.y_train = None
+            self.y_test = None
+        else:
+            self.x_train = x_data_info["train"]
+            self.x_test = x_data_info["test"]
+            self.y_train = y_data_info["train"]
+            self.y_test = y_data_info["test"]
+
 
 class ResultsInfo:
     def __init__(self):
@@ -13,6 +24,8 @@ class ResultsInfo:
         self.covariance_matrix = None
         self.Pearson_correlation_coefficient = None
         self.spearman_correlation = None
+        self.model = None
+        self.prediction = None
 
     def get_eq_line(self):
         intercept = list(map('{:.3f}'.format, self.intercept))[0]

@@ -1,5 +1,6 @@
 # user define imports
 from my_package.singleton import Singleton
+
 # python imports
 from sqlalchemy import create_engine, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
