@@ -1,5 +1,4 @@
 # user define imports
-from my_package import util as util
 from my_package.analysis_info import AnalysisInfo, DataInfo, ResultsInfo
 from my_package.data_cleaner import DataCleaner
 

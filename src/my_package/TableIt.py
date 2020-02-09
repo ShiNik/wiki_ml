@@ -2,9 +2,6 @@
 
 # python imports
 import os
-import math
-import random
-
 
 def initColors():
     os.system("cls")

@@ -5,6 +5,7 @@ from my_package import TableIt as TableIt
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def get_plot_size(num_items):
     num_col = 2
     num_row = int(np.ceil(num_items / num_col))

@@ -4,7 +4,6 @@ from my_package.analysis_info import ResultsInfo
 
 # python imports
 import numpy as np
-import re
 
 
 class MachineLearningComponents:

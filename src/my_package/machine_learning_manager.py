@@ -1,5 +1,4 @@
 # user define imports
-from my_package import util as util
 from my_package.log_manager import LogManager
 from my_package.database_manager import DatabaseManager
 from my_package import statistics as statistics
@@ -8,8 +7,6 @@ from my_package.machine_learning_components import LinearRegression
 from my_package.data_processor import DataProcessor
 from my_package.analysis_info import AnalysisInfo, DataInfo, ResultsInfo
 
-
-# python imports
 
 class MachineLearningManager:
     def __init__(self):
