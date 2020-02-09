@@ -1,9 +1,11 @@
 FROM continuumio/anaconda3:2019.10
 
-RUN conda env create -f environment.yml && \
-    conda activate wiki_ml
+COPY installation/environment.yml /usr/src/installation/environment.yml
 
-RUN /opt/conda/bin/conda install jupyter -y --quiet && \ 
-    mkdir /opt/notebooks && \
-    /opt/conda/bin/jupyter notebook --notebook-dir=/opt/notebooks --ip='*' --port=8888 --no-browser
+RUN conda env create -f /usr/src/installation/environment.yml && \
+    conda clean --all -f -y && \
+    rm /usr/src/installation/environment.yml
 
+ENTRYPOINT ["tail", "-f", "/dev/null"]
+# Make RUN commands use the new environment:
+#
