@@ -43,9 +43,9 @@ services:
     build: .
     depends_on:
       - jupyter
-    image: snikfal/wiki_ml:latest
+    image: snikfal/wiki_ml:wtf
     volumes: 
-      - .:/usr/src/app
+      - .:/wikiml
     restart: unless-stopped
 
 

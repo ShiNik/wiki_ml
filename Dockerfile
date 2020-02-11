@@ -1,11 +1,9 @@
-FROM continuumio/anaconda3:2019.10
+FROM python:3.7
 
-COPY installation/environment.yml /usr/src/installation/environment.yml
+RUN mkdir wikiml
 
-RUN conda env create -f /usr/src/installation/environment.yml && \
-    conda clean --all -f -y && \
-    rm /usr/src/installation/environment.yml
+COPY ./dependencies/requirements.txt ./wikiml/tmp/requirements.txt
 
-ENTRYPOINT ["tail", "-f", "/dev/null"]
-# Make RUN commands use the new environment:
-#
+RUN pip install -r /wikiml/tmp/requirements.txt
+
+CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
