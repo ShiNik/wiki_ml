@@ -79,7 +79,7 @@ def plot_data(dataset, labels, silen_mode_enabled=True):
     logger = LogManager.instance()
     if logger.debug_enabled():
         from my_package import util as util
-        file_name = '2D_Graph_cleaned_data_' + labels["x"][1] + 'vs' + labels["y"][1] + ".png"
+        file_name = 'Scatter_Data_' + labels["x"][1] + 'vs' + labels["y"][1] + ".png"
         full_path = util.get_full_output_path(file_name)
         fig.savefig(full_path)
 
@@ -91,11 +91,10 @@ def plot_results(analysis, silent_mode_enabled=True):
     y_test = analysis.data_info.y_test
     y_pred = analysis.results_info.prediction
     if y_test is not None and y_pred is not None:
-        analysis.data_info.y_label
         df = pd.DataFrame({analysis.data_info.y_label + ' Actual': y_test.flatten(),
                            analysis.data_info.y_label + ' Predicted': y_pred.flatten()})
         df1 = df.head(25)
-        axes_subplot = df1.plot(kind='bar', figsize=(16, 10))
+        axes_subplot = df1.plot(title = analysis.data_info.x_label , kind='bar', figsize=(16, 10))
         plt.grid(which='major', linestyle='-', linewidth='0.5', color='green')
         plt.grid(which='minor', linestyle=':', linewidth='0.5', color='black')
         if not silent_mode_enabled:
@@ -105,7 +104,7 @@ def plot_results(analysis, silent_mode_enabled=True):
         logger = LogManager.instance()
         if logger.debug_enabled():
             from my_package import util as util
-            file_name = '2D_Graph_cleaned_data_' + analysis.data_info.x_label + " _ " + analysis.data_info.y_label + ' Actual' + 'vs' + analysis.data_info.y_label + ' Predicted' + ".png"
+            file_name = 'Result_' + analysis.data_info.x_label + " _ " + analysis.data_info.y_label + ' Actual' + 'vs' + analysis.data_info.y_label + ' Predicted' + ".png"
             full_path = util.get_full_output_path(file_name)
 
             fig.savefig(full_path)
@@ -129,7 +128,7 @@ def scatter_plot_results(analysis,  silent_mode_enabled=True):
         logger = LogManager.instance()
         if logger.debug_enabled():
             from my_package import util as util
-            file_name = '2D_Graph_results_' + analysis.data_info.x_label + " _ " + analysis.data_info.y_label + ' Actual' + 'vs' + analysis.data_info.y_label + ' Predicted' + ".png"
+            file_name = 'Scatter_Results_' + analysis.data_info.x_label + " _ " + analysis.data_info.y_label + ' Actual' + 'vs' + analysis.data_info.y_label + ' Predicted' + ".png"
             full_path = util.get_full_output_path(file_name)
             fig.savefig(full_path, dpi=fig.dpi, bbox_inches='tight', pad_inches=0.5)
 
@@ -219,6 +218,7 @@ def plot_data_distribution(data, file_name, silent_mode_enabled=True):
     plt.figure(figsize=(15, 10))
     plt.tight_layout()
     seaborn_plot = seabornInstance.distplot(data)
+    plt.show()
 
     logger = LogManager.instance()
     if logger.debug_enabled():
