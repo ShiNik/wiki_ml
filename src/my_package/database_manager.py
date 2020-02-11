@@ -8,6 +8,7 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import ProgrammingError
 from sqlalchemy.inspection import inspect
+from sqlalchemy_utils import create_database, database_exists
 import pandas as pd
 
 Base = declarative_base()
@@ -126,6 +127,9 @@ class DatabaseManager():
         db_string = config.database_type + "://" + config.database_user_name + ":" + \
                     config.database_password + "@" + config.database_host + ":" + \
                     config.database_port + "/" + config.database_name
+
+        if not database_exists(db_string):
+            create_database(db_string)
 
         self.db_engine = create_engine(db_string)
 

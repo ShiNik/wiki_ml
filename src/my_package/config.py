@@ -24,8 +24,9 @@ database_password = "pguser"
 # outside docker-compose
 # database_host = localhost, ports are mapped from container to host
 # from inside docker-compose
-# database_host = pywikibot_dbpostgres_1 because docker-compose has its own network
-database_host = "localhost"
+# database_host = dbpostgres because docker-compose has its own network
+database_host = "dbpostgres"
+# database_host = "localhost"
 database_port = "5432"
 
 delete_tables = False

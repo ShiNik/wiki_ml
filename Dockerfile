@@ -1,9 +1,9 @@
-FROM continuumio/anaconda3:2019.10
+FROM python:3.7
 
-RUN conda env create -f environment.yml && \
-    conda activate wiki_ml
+RUN mkdir wikiml
 
-RUN /opt/conda/bin/conda install jupyter -y --quiet && \ 
-    mkdir /opt/notebooks && \
-    /opt/conda/bin/jupyter notebook --notebook-dir=/opt/notebooks --ip='*' --port=8888 --no-browser
+COPY ./dependencies/requirements.txt ./wikiml/tmp/requirements.txt
 
+RUN pip install -r /wikiml/tmp/requirements.txt
+
+CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"

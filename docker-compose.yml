@@ -27,7 +27,7 @@ services:
       - "8080:80"
     restart: unless-stopped
 
-  ml_app:
+  jupyter:
     container_name: jupyter
     image: jupyter/minimal-notebook:latest 
     depends_on:
@@ -37,6 +37,15 @@ services:
       - .:/home/jovyan/src
     ports:
       - "8888:8888"
+    restart: unless-stopped
+
+  wiki_ml:
+    build: .
+    depends_on:
+      - jupyter
+    image: snikfal/wiki_ml:wtf
+    volumes: 
+      - .:/wikiml
     restart: unless-stopped
 
 
