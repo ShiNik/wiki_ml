@@ -36,7 +36,6 @@ def main():
         return
 
     if general_action == 'd':
-        return
         database_manager.delete_all_data()
         data_fetch.DataFetchManager.fetch_data(config)
         return

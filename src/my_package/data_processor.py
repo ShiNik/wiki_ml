@@ -32,9 +32,13 @@ class DataProcessor:
         df_selected.loc[:, 'visitor'] = pd.to_numeric(df_selected.loc[:, 'visitor'])
         df_clean = df_selected.dropna()
 
-        file_name = "2D_Graph_cleaned_data_distribution City Population vs Museum Visitors.png"
+        file_name = "distribution_All_MuseumVisitors_Function_population_visitors.png"
         silent_mode_enabled = config.silent_mode_enabled
         visualizer.plot_data_distribution(df_clean['visitor'], file_name, silent_mode_enabled)
+
+        file_name = "distribution_All_CityPopulation_Function_population_visitors.png"
+        silent_mode_enabled = config.silent_mode_enabled
+        visualizer.plot_data_distribution(df_clean['population'], file_name, silent_mode_enabled)
 
         labels = {"x": ["population", "City Population"], "y": ["visitor", "Museum Visitors"]}
         visualizer.plot_data(df_clean, labels, silent_mode_enabled)
@@ -43,6 +47,7 @@ class DataProcessor:
         y_visitor = df_clean['visitor'].to_numpy()
 
         visualizer.quantile_quantile_plot(y_visitor, silent_mode_enabled)
+        visualizer.quantile_quantile_plot(x_population, silent_mode_enabled)
 
         X_train, X_test, y_train, y_test = DataProcessor.train_test_split(df_clean, "population", "visitor", 0.2)
         x_data_info = {"values": x_population.tolist(), "label": "City Population", "train":X_train, "test":X_test}
@@ -131,9 +136,13 @@ class DataProcessor:
         df_selected.loc[:, 'visitor'] = pd.to_numeric(df_selected.loc[:, 'visitor'])
         df_clean = df_selected.dropna()
 
-        file_name = "2D_Graph_cleaned_data_distribution City Visitors vs Museum Visitors.png"
+        file_name = "distribution_All_MuseumVisitors_Function_city_visitor_museum_visitors.png"
         silent_mode_enabled = config.silent_mode_enabled
         visualizer.plot_data_distribution(df_clean['visitor'], file_name, silent_mode_enabled)
+
+        file_name = "distribution_All_CityVisitors_Function_city_visitor_museum_visitors.png"
+        silent_mode_enabled = config.silent_mode_enabled
+        visualizer.plot_data_distribution(df_clean['city_visitor'], file_name, silent_mode_enabled)
 
         labels = {"x": ["city_visitor", "City Visitors"], "y": ["visitor", "Museum Visitors"]}
         visualizer.plot_data(df_clean, labels, silent_mode_enabled)
@@ -253,7 +262,8 @@ class DataProcessor:
 
         X = dataset[['population', 'established', 'city_visitor', 'type']].values
         y = dataset['visitor'].values
-        file_name = "2D_Graph_cleaned_data_distribution multiple linear s vs Museum Visitors.png"
+
+        file_name = "distribution_All_MuseumVisitors_Function_multiple_linear_data.png"
         silent_mode_enabled = config.silent_mode_enabled
         visualizer.plot_data_distribution(dataset['visitor'], file_name, silent_mode_enabled)
 
@@ -271,7 +281,6 @@ class DataProcessor:
         regressor.fit(X_train, y_train)  # training the algorithm
         y_pred = regressor.predict(X_test)
         df = pd.DataFrame({'Actual': y_test.flatten(), 'Predicted': y_pred.flatten()})
-
 
         analysis.results_info = ResultsInfo()
         analysis.results_info.prediction = y_pred
