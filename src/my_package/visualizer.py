@@ -14,7 +14,7 @@ import scipy.stats as stats
 
 
 def get_plot_size(num_items):
-    num_col = 2
+    num_col = 3
     num_row = int(np.ceil(num_items / num_col))
     return {"row_size": num_row, "col_size": num_col}
 
@@ -22,8 +22,8 @@ def get_plot_size(num_items):
 def scatter_plots(analysis_list, plot_title, silen_mode_enabled=True):
     plot_size = get_plot_size(len(analysis_list))
 
-    fig, axs = plt.subplots(plot_size["row_size"], plot_size["col_size"], figsize=(10, 10),
-                            gridspec_kw={'wspace': 0.2, 'hspace': 0.55})
+    fig, axs = plt.subplots(plot_size["row_size"], plot_size["col_size"], figsize=(20, 10),
+                            gridspec_kw={'wspace': 0.5, 'hspace': 0.55})
     fig.suptitle(plot_title, fontsize=15)
     axs = axs.flatten()
     for analysis, ax in zip(analysis_list, axs):
@@ -66,6 +66,7 @@ def scatter_plots(analysis_list, plot_title, silen_mode_enabled=True):
 
     plt.close(fig)
 
+
 def plot_data(dataset, labels, silen_mode_enabled=True):
     axes_subplot = dataset.plot(x=labels["x"][0], y=labels["y"][0], style='o')
     plt.title(labels["x"][1] + ' vs ' + labels["y"][1])
@@ -85,6 +86,7 @@ def plot_data(dataset, labels, silen_mode_enabled=True):
 
     plt.close(fig)
 
+
 def plot_results(analysis, silent_mode_enabled=True):
     import pandas as pd
 
@@ -94,7 +96,7 @@ def plot_results(analysis, silent_mode_enabled=True):
         df = pd.DataFrame({analysis.data_info.y_label + ' Actual': y_test.flatten(),
                            analysis.data_info.y_label + ' Predicted': y_pred.flatten()})
         df1 = df.head(25)
-        axes_subplot = df1.plot(title = analysis.data_info.x_label , kind='bar', figsize=(16, 10))
+        axes_subplot = df1.plot(title=analysis.data_info.x_label, kind='bar', figsize=(16, 10))
         plt.grid(which='major', linestyle='-', linewidth='0.5', color='green')
         plt.grid(which='minor', linestyle=':', linewidth='0.5', color='black')
         if not silent_mode_enabled:
@@ -111,7 +113,8 @@ def plot_results(analysis, silent_mode_enabled=True):
 
         plt.close(fig)
 
-def scatter_plot_results(analysis,  silent_mode_enabled=True):
+
+def scatter_plot_results(analysis, silent_mode_enabled=True):
     y_test = analysis.data_info.y_test
     y_pred = analysis.results_info.prediction
     x_test = analysis.data_info.x_test
@@ -134,6 +137,7 @@ def scatter_plot_results(analysis,  silent_mode_enabled=True):
 
         plt.close(fig)
 
+
 def print_result(analysis):
     print("============= " + analysis.get_name() + " ===============")
     analysis.print()
@@ -155,7 +159,6 @@ def print_smart_table(analysis_list, title):
         table.append(row)
 
     TableIt.printTable(table, title, useFieldNames=True, color=(26, 156, 171))
-
 
 
 def print_regression_results(analysis_list, formated_enabled):
@@ -233,3 +236,33 @@ def quantile_quantile_plot(data, silent_mode_enabled=True):
 
     stats.probplot(data, dist="norm", plot=pylab)
     pylab.show()
+
+
+def residual_plot(analysis, silent_mode_enabled=True):
+    x_train = analysis.data_info.x_train
+    x_test = analysis.data_info.x_test
+    y_train = analysis.data_info.x_train
+    y_test = analysis.data_info.x_test
+    model = analysis.results_info.model
+
+    if x_train is not None and x_test is not None and \
+            y_train is not None and y_test is not None and \
+            model is not None:
+        fig = plt.figure(figsize=(10, 10))
+        plt.scatter(model.predict(x_train), model.predict(x_train) - y_train, color='blue', s=40, alpha=0.5)
+        plt.scatter(model.predict(x_test), model.predict(x_test) - y_test, color='green', s=40)
+        plt.hlines(y=0, xmin=0, xmax=9000000)
+        plt.title(
+            "Residual plot using training(blue) and test(green) data; " + analysis.data_info.x_label + ' vs ' + analysis.data_info.y_label)
+        plt.ylabel("Residuals")
+        if not silent_mode_enabled:
+            plt.show()
+
+        logger = LogManager.instance()
+        if logger.debug_enabled():
+            from my_package import util as util
+            file_name = 'Residual_' + analysis.data_info.x_label + "_" + analysis.data_info.y_label + ".png"
+            full_path = util.get_full_output_path(file_name)
+            fig.savefig(full_path, dpi=fig.dpi, bbox_inches='tight', pad_inches=0.5)
+
+        plt.close(fig)

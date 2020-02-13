@@ -71,9 +71,10 @@ class MachineLearningManager:
             LinearRegression.perform_analysis(analysis)
             visualizer.plot_results(analysis, silent_mode_enabled)
             visualizer.scatter_plot_results(analysis, silent_mode_enabled)
+            visualizer.residual_plot(analysis, silent_mode_enabled)
             if logger.debug_enabled():
                 visualizer.print_result(analysis)
 
         visualizer.scatter_plots(analysis_list, "Linear Regression analysis results", silent_mode_enabled)
         visualizer.print_regression_results(analysis_list, True)
-        # visualizer.print_smart_table(analysis_list, " Linear Regression analysis results")
+        visualizer.print_smart_table(analysis_list, " Linear Regression analysis results")
