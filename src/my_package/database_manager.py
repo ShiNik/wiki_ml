@@ -219,7 +219,7 @@ class DatabaseManager():
 
         try:
             query_result = self.session.query(City, Museum).filter(Museum.city_id == City.id).all()
-            return self.query_to_df(query_result)
+            return self.query_to_df(query_result) if len(query_result) else None
         except ProgrammingError as E:
             print(E.args[0])
             raise E.args[0]

@@ -7,11 +7,10 @@ import sklearn.metrics as metrics
 # python imports
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.pyplot as plt
 import seaborn as seabornInstance
 import pylab
 import scipy.stats as stats
-
+import pandas as pd
 
 def get_plot_size(num_items):
     num_col = 3
@@ -266,3 +265,42 @@ def residual_plot(analysis, silent_mode_enabled=True):
             fig.savefig(full_path, dpi=fig.dpi, bbox_inches='tight', pad_inches=0.5)
 
         plt.close(fig)
+
+def missingdata_plot(dataframe, silent_mode_enabled=True):
+    museum_name = dataframe["museum"].tolist()  # ----------x-axis
+    dataframe = dataframe.drop(columns=["museum", "id", "city_id"])  # ----------Independent Features
+    features = dataframe.head()
+    ##
+    df_size = dataframe.shape
+    missingdata_matrix = np.zeros(dataframe.shape)
+
+    ##
+    df = pd.isna(dataframe)
+    df_array = df.to_numpy()
+    for i in range(df_array.shape[0]):
+        for j in range(df_array.shape[1]):
+            if df_array[i][j]:
+                missingdata_matrix[i][j] = int(0)
+            else:
+                missingdata_matrix[i][j] = int(1)
+    missingdata_matrix = missingdata_matrix.T
+    fig = plt.matshow(missingdata_matrix)
+    plt.xlabel('Museum')
+    plt.ylabel('Features')
+    x = list(range(0, 46))
+    y = list(range(0, 12))
+    plt.yticks(y, features)
+    plt.xticks(x, museum_name, rotation=90)
+    plt.colorbar()
+
+    if not silent_mode_enabled:
+        plt.show()
+
+    logger = LogManager.instance()
+    if logger.debug_enabled():
+        from my_package import util as util
+        file_name = "missingdata.png"
+        full_path = util.get_full_output_path(file_name)
+        plt.savefig(full_path)
+
+    plt.close(fig)

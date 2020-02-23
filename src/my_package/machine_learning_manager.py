@@ -15,9 +15,13 @@ class MachineLearningManager:
     @staticmethod
     def get_data(database_manager, data_map_analysis):
         df = database_manager.load()
+        if df is None:
+            print('Database is empty!')
+            return None, None
+
         if df.empty:
             print('Database is empty!')
-            return None
+            return None, None
         df_reduced = df[data_map_analysis.keys()]
         return df_reduced, df
 
@@ -31,11 +35,14 @@ class MachineLearningManager:
                              "city_visitor": "city_visitor"}
         database_manager = DatabaseManager.instance()
         loaded_data, original_data = MachineLearningManager.get_data(database_manager, data_map_analysis)
+
         if loaded_data is None:
             print('Fail to load the data from database!')
+            return
+
         cleaned_df = DataProcessor.data_cleanup(loaded_data)
         cleaned_original_data = DataProcessor.data_cleanup(original_data)
-
+        visualizer.missingdata_plot(cleaned_original_data, config.silent_mode_enabled)
         analysis_list = []
         data_map = {"city": "city",
                     "visitor": "visitor",
