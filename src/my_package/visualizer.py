@@ -303,4 +303,4 @@ def missingdata_plot(dataframe, silent_mode_enabled=True):
         full_path = util.get_full_output_path(file_name)
         plt.savefig(full_path)
 
-    plt.close(fig)
+    plt.close()
