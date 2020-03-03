@@ -1,5 +1,6 @@
 # python imports
 import re
+import numpy as np
 
 
 class DataCleaner:
@@ -18,6 +19,16 @@ class DataCleaner:
         b = '[^0-9]+'
         result_re = re.sub(b, '', str_number)
         return '' if len(result_re) == 0 else result_re
+
+    @staticmethod
+    def empty_to_none(df):
+        for i, row in df.iterrows():
+            for j, column in row.iteritems():
+                if df.loc[i, j] == '' :
+                    df.loc[i, j] = np.nan
+                elif df.loc[i, j] == None:
+                    df.loc[i, j] = np.nan
+        return df
 
     @staticmethod
     def perform_cleanup(df):

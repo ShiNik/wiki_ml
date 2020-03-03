@@ -84,5 +84,5 @@ dependencies:
     - urllib3==1.25.8
     - wcwidth==0.1.8
     - wikitextparser==0.28.1
-prefix: /home/shima/.conda/envs/wiki_ml
+prefix: /home/[username]/.conda/envs/wiki_ml
 

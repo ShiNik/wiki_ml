@@ -6,6 +6,7 @@ from my_package import visualizer as visualizer
 from my_package.machine_learning_components import LinearRegression
 from my_package.data_processor import DataProcessor
 from my_package.analysis_info import AnalysisInfo, DataInfo, ResultsInfo
+from my_package.data_cleaner import DataCleaner
 
 
 class MachineLearningManager:
@@ -42,7 +43,9 @@ class MachineLearningManager:
 
         cleaned_df = DataProcessor.data_cleanup(loaded_data)
         cleaned_original_data = DataProcessor.data_cleanup(original_data)
-        visualizer.missingdata_plot(cleaned_original_data, config.silent_mode_enabled)
+        cleaned_original_data_new = DataCleaner.empty_to_none(cleaned_original_data)
+        visualizer.missingdata_plot(cleaned_original_data_new, config.silent_mode_enabled)
+
         analysis_list = []
         data_map = {"city": "city",
                     "visitor": "visitor",
