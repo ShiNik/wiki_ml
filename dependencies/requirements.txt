@@ -1,0 +1,12 @@
+numpy
+scipy
+matplotlib
+requests
+pandas
+scikit-learn
+setuptools
+wikitextparser
+seaborn
+SQLAlchemy
+SQLAlchemy-utils
+psycopg2
